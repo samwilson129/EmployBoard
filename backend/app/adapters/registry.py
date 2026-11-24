@@ -1,0 +1,28 @@
+from __future__ import annotations
+
+import httpx
+
+from app.adapters.ashby import AshbyAdapter
+from app.adapters.base import ATSAdapter
+from app.adapters.greenhouse import GreenhouseAdapter
+from app.adapters.lever import LeverAdapter
+from app.adapters.smartrecruiters import SmartRecruitersAdapter
+from app.config import Settings
+from app.models.enums import ATSProvider
+
+_ADAPTERS: dict[str, type[ATSAdapter]] = {
+    ATSProvider.GREENHOUSE.value: GreenhouseAdapter,
+    ATSProvider.LEVER.value: LeverAdapter,
+    ATSProvider.ASHBY.value: AshbyAdapter,
+    ATSProvider.SMARTRECRUITERS.value: SmartRecruitersAdapter,
+}
+
+
+def build_adapter(
+    provider: str, client: httpx.AsyncClient, settings: Settings
+) -> ATSAdapter:
+    try:
+        adapter_class = _ADAPTERS[provider]
+    except KeyError as exc:
+        raise ValueError(f"Unsupported ATS provider: {provider}") from exc
+    return adapter_class(client, settings)

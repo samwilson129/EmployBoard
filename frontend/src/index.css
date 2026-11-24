@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased;
+  }
+
+  ::selection {
+    @apply bg-indigo-100 text-indigo-900;
+  }
+}
+
+@layer components {
+  .field-label {
+    @apply mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500;
+  }
+
+  .field-input {
+    @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20;
+  }
+
+  .field-select {
+    @apply field-input cursor-pointer pr-8;
+  }
+
+  .tag {
+    @apply inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium;
+  }
+
+  .filter-chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-600;
+  }
+
+  .job-card {
+    @apply rounded-xl border border-slate-200 bg-white p-4 shadow-card transition duration-150 hover:border-slate-300 hover:shadow-md sm:p-5;
+  }
+
+  .meta-label {
+    @apply text-xs font-medium uppercase tracking-wide text-slate-500;
+  }
+
+  .meta-value {
+    @apply mt-0.5 text-sm font-medium text-slate-800;
+  }
+}
+
+.job-html {
+  @apply prose prose-slate max-w-none prose-sm;
+}
+
+.job-html > :first-child {
+  margin-top: 0;
+}
+
+.job-html img {
+  @apply rounded-lg;
+  max-width: 100%;
+  height: auto;
+}
+
+.job-html table {
+  @apply w-full border-collapse text-sm;
+}
+
+.job-html th,
+.job-html td {
+  @apply border border-slate-200 px-2 py-1 text-left align-top;
+}
+
+.job-html a {
+  @apply break-words text-indigo-600 underline decoration-indigo-300 underline-offset-2;
+}
+
+.job-html ul,
+.job-html ol {
+  @apply my-3 pl-5;
+}
+
+.job-html h1,
+.job-html h2,
+.job-html h3,
+.job-html h4 {
+  @apply text-slate-900;
+}
+
+.job-html p,
+.job-html li {
+  @apply text-slate-700;
+}
+
+/* Thin, unobtrusive scrollbars for filter columns and the detail panel. */
+.scroll-slim {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(203 213 225) transparent;
+}
+
+.scroll-slim::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scroll-slim::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  background-color: rgb(203 213 225);
+}
