@@ -221,7 +221,13 @@ async def get_facets(session: AsyncSession) -> FacetsResponse:
 
 async def list_companies(session: AsyncSession) -> CompaniesResponse:
     companies = list(
-        (await session.scalars(select(Company).order_by(Company.company_name.asc()))).all()
+        (
+            await session.scalars(
+                select(Company)
+                .where(Company.jobs.any(Job.is_active.is_(True)))
+                .order_by(Company.company_name.asc())
+            )
+        ).all()
     )
     active_counts = {
         company_id: int(count)
