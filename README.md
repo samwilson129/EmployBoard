@@ -51,14 +51,20 @@ The platform is built around a data-engineering pipeline that handles external A
 
 EmployBoard provides a unified interface for discovering publicly available job opportunities across multiple companies.
 
-The platform integrates with four ATS providers:
+The platform integrates with eight ATS providers:
 
 - Greenhouse
 - Lever
 - Ashby
 - SmartRecruiters
+- Recruitee
+- Workable
+- Personio
+- Teamtailor
 
-Each provider exposes job information through its own public API, with different response structures, field names, data formats and levels of detail.
+Each provider exposes job information through its own public API or structured
+careers feed, with different response structures, field names, data formats and
+levels of detail.
 
 EmployBoard abstracts these differences through provider-specific adapters and transforms the retrieved information into a standardized internal representation.
 
@@ -314,7 +320,7 @@ EmployBoard consumes the public job-posting interfaces exposed by these platform
 
 It does not require access to private recruitment data or candidate records.
 
-The current implementation integrates four providers.
+The current implementation integrates eight providers.
 
 ## 6.1 Ashby
 
@@ -2527,9 +2533,11 @@ EmployBoard preserves missing values rather than inventing information.
 
 ## ATS coverage
 
-The current implementation supports four ATS providers and seven registered companies.
+The current implementation supports eight ATS providers. The generated registry
+contains only identity-verified companies with live postings.
 
-Companies using other recruitment systems require additional integrations.
+Companies using other recruitment systems require additional integrations or a
+public structured feed that can be validated without credentials.
 
 ## Duplicate resolution
 

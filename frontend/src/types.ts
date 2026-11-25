@@ -2,7 +2,11 @@ export type AtsProvider =
   | "greenhouse"
   | "lever"
   | "ashby"
-  | "smartrecruiters";
+  | "smartrecruiters"
+  | "recruitee"
+  | "workable"
+  | "personio"
+  | "teamtailor";
 
 export type EmploymentType =
   | "Full-time"

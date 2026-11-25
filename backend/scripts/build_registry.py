@@ -172,6 +172,15 @@ EXCLUDED: set[tuple[str, str]] = {
     ("smartrecruiters", "Glean"),
     ("smartrecruiters", "Uber"),
     ("smartrecruiters", "DevotedHealth"),
+    # These public feeds belong to similarly named companies, not the
+    # candidate in the discovery list.
+    ("recruitee", "clay"),        # Clay Hospitality
+    ("recruitee", "prisma"),      # Prisma care organization
+    ("recruitee", "spring"),      # SPRiNG, not Spring Health
+    ("teamtailor", "united"),     # United, an Italian local employer
+    ("teamtailor", "maersk"),     # Teamtailor's own demo/employer board
+    ("teamtailor", "meilisearch"),  # unrelated French employer
+    ("teamtailor", "dbt"),        # DBT Swedish fintech, not dbt Labs
 }
 
 # Boards whose provider-reported name failed the conservative token check but
@@ -203,6 +212,10 @@ CAREERS_URLS = {
     "lever": "https://jobs.lever.co/{board}",
     "ashby": "https://jobs.ashbyhq.com/{board}",
     "smartrecruiters": "https://careers.smartrecruiters.com/{board}",
+    "recruitee": "https://{board}.recruitee.com/",
+    "workable": "https://apply.workable.com/{board}/",
+    "personio": "https://{board}.jobs.personio.de/",
+    "teamtailor": "https://{board}.teamtailor.com/jobs",
 }
 
 PROVIDER_LABELS = {
@@ -210,6 +223,10 @@ PROVIDER_LABELS = {
     "lever": "Lever public postings API",
     "ashby": "Ashby public job posting API",
     "smartrecruiters": "SmartRecruiters public postings API",
+    "recruitee": "Recruitee public company offers API",
+    "workable": "Workable public careers widget API",
+    "personio": "Personio public career-site XML feed",
+    "teamtailor": "Teamtailor public jobs RSS feed",
 }
 
 

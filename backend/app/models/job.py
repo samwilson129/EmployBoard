@@ -75,6 +75,18 @@ class Job(Base, TimestampMixin):
         Index("ix_jobs_normalized_title", "normalized_title"),
         Index("ix_jobs_normalized_location", "normalized_location"),
         Index("ix_jobs_skills", "skills", postgresql_using="gin"),
+        Index(
+            "ix_jobs_title_trgm",
+            "title",
+            postgresql_using="gin",
+            postgresql_ops={"title": "gin_trgm_ops"},
+        ),
+        Index(
+            "ix_jobs_location_trgm",
+            "location",
+            postgresql_using="gin",
+            postgresql_ops={"location": "gin_trgm_ops"},
+        ),
     )
 
     job_id: Mapped[uuid.UUID] = mapped_column(

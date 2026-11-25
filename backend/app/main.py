@@ -71,8 +71,8 @@ app = FastAPI(
     title="EmployBoard API",
     version=__version__,
     description=(
-        "Public job aggregation API. Normalizes postings from Greenhouse, Lever, "
-        "Ashby and SmartRecruiters into one schema."
+        "Public job aggregation API. Normalizes postings from eight public ATS "
+        "providers into one schema."
     ),
     lifespan=lifespan,
 )

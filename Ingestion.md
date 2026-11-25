@@ -8,16 +8,21 @@
 
 EmployBoard collects publicly available job postings from multiple companies by integrating with the public job-posting APIs exposed by their Applicant Tracking Systems (ATS).
 
-Rather than scraping individual career websites using HTML selectors or browser automation, EmployBoard consumes structured JSON responses directly from the underlying recruitment platforms.
+Rather than scraping individual career websites using HTML selectors or browser automation, EmployBoard consumes structured JSON, XML or RSS responses directly from the underlying recruitment platforms.
 
-The application currently integrates with four ATS providers:
+The application currently integrates with eight ATS providers:
 
 1. Ashby
 2. Greenhouse
 3. Lever
 4. SmartRecruiters
+5. Recruitee
+6. Workable
+7. Personio
+8. Teamtailor
 
-Each provider exposes its own API structure, endpoint conventions, field names, metadata formats and data availability.
+Each provider exposes its own API or structured careers-feed format, endpoint
+conventions, field names, metadata formats and data availability.
 
 EmployBoard implements a dedicated adapter for each provider. These adapters retrieve the external information, parse the provider-specific response and transform it into a common intermediate representation.
 
@@ -62,7 +67,7 @@ The collection architecture separates external communication from internal data 
                   EXTERNAL HTTP REQUEST
                            |
                            v
-                    JSON RESPONSE
+                 JSON/XML/RSS RESPONSE
                            |
                            v
                   PROVIDER-SPECIFIC
@@ -1289,7 +1294,7 @@ This object is the boundary between external data extraction and internal data p
 
 ### Why AdapterJob exists
 
-Without this intermediate representation, the normalization service would need to understand four different provider response formats.
+Without this intermediate representation, the normalization service would need to understand eight different provider response formats.
 
 Instead:
 
@@ -1857,6 +1862,10 @@ The following are the external documentation references used by the integrations
 | Greenhouse | https://developers.greenhouse.io/job-board.html |
 | Lever | https://github.com/lever/postings-api |
 | SmartRecruiters | https://dev.smartrecruiters.com/ |
+| Recruitee | https://docs.recruitee.com/reference/offers |
+| Workable | https://help.workable.com/hc/en-us/articles/115012771647-Using-the-Workable-API |
+| Personio | https://developer.personio.de/v1.0/reference/get_xml |
+| Teamtailor | https://support.teamtailor.com/en/articles/11171756-rss-feed-how-to-guide |
 
 These references should be consulted when:
 - Adding new integrations.
@@ -1871,7 +1880,9 @@ These references should be consulted when:
 
 EmployBoard's data collection architecture is designed around a provider-independent ingestion pipeline.
 
-The four ATS integrations are responsible for understanding their respective external APIs and converting the retrieved information into a common intermediate representation.
+The eight ATS integrations are responsible for understanding their respective
+external APIs or structured feeds and converting the retrieved information into
+a common intermediate representation.
 
 The shared normalization service then standardizes the extracted information.
 

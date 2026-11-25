@@ -99,6 +99,10 @@ export function providerLabel(provider: string | null | undefined): string {
     lever: "Lever",
     ashby: "Ashby",
     smartrecruiters: "SmartRecruiters",
+    recruitee: "Recruitee",
+    workable: "Workable",
+    personio: "Personio",
+    teamtailor: "Teamtailor",
   };
   return provider ? labels[provider] ?? provider : "Unknown source";
 }
@@ -109,6 +113,10 @@ export function providerBadgeClass(provider: string | null | undefined): string 
     lever: "bg-violet-50 text-violet-700 ring-violet-600/20",
     ashby: "bg-amber-50 text-amber-800 ring-amber-600/20",
     smartrecruiters: "bg-sky-50 text-sky-700 ring-sky-600/20",
+    recruitee: "bg-rose-50 text-rose-700 ring-rose-600/20",
+    workable: "bg-blue-50 text-blue-700 ring-blue-600/20",
+    personio: "bg-orange-50 text-orange-700 ring-orange-600/20",
+    teamtailor: "bg-cyan-50 text-cyan-700 ring-cyan-600/20",
   };
   return provider ? classes[provider] ?? "bg-slate-100 text-slate-700 ring-slate-500/20" : "bg-slate-100 text-slate-700 ring-slate-500/20";
 }
@@ -119,6 +127,10 @@ export function providerDotClass(provider: AtsProvider | string): string {
     lever: "bg-violet-500",
     ashby: "bg-amber-500",
     smartrecruiters: "bg-sky-500",
+    recruitee: "bg-rose-500",
+    workable: "bg-blue-500",
+    personio: "bg-orange-500",
+    teamtailor: "bg-cyan-500",
   };
   return classes[provider] ?? "bg-slate-400";
 }

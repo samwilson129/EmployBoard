@@ -6,6 +6,10 @@ This maintenance tool only uses the documented public posting APIs:
 * Lever       https://api.lever.co/v0/postings/{board}?mode=json
 * Ashby       https://api.ashbyhq.com/posting-api/job-board/{board}
 * SmartRecruiters https://api.smartrecruiters.com/v1/companies/{id}/postings
+* Recruitee   https://{company}.recruitee.com/api/offers
+* Workable    https://apply.workable.com/api/v1/widget/accounts/{company}
+* Personio    https://{company}.jobs.personio.de/xml?language=en
+* Teamtailor  https://{company}.teamtailor.com/jobs.rss
 
 A board is only reported as verified when the provider returns live postings
 and the provider-reported company name matches the candidate. Nothing is
@@ -24,6 +28,7 @@ import json
 import re
 import sys
 import time
+import xml.etree.ElementTree as ET
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
 from typing import Any
@@ -339,9 +344,9 @@ Siemens Healthineers | siemenshealthineers | siemens-healthineers.com
 """
 
 # Second-pass candidates. These are additional real companies selected because
-# their public careers pages are commonly hosted by one of the four supported
-# ATS providers. The provider API and reported company identity remain the
-# source of truth; candidates that do not resolve are omitted.
+# their public careers pages are commonly hosted by one of the supported ATS
+# providers. The provider feed and reported company identity remain the source
+# of truth; candidates that do not resolve are omitted.
 EXTRA_CANDIDATES_RAW = """
 GitHub | github | github.com
 Palantir | palantir | palantir.com
@@ -990,6 +995,16 @@ Greenhouse Software | greenhouse | greenhouse.io
 Lever | lever | lever.co
 Ashby | ashby | ashbyhq.com
 SmartRecruiters | smartrecruiters | smartrecruiters.com
+Hospitable | hospitable | hospitable.com
+Bunq | bunq | bunq.com
+Vandebron | vandebron | vandebron.com
+Channable | channable | channable.com
+Happeo | happeo | happeo.com
+Personio | personio | personio.com
+GetJet Airlines | getjet | getjet.com
+Omnicare | omnicare | omnicare.com
+Hive | hive | hive.com
+Decidr | decidr | decidr.ai
 """
 
 # Extra board tokens to try for companies whose ATS slug is not the plain name.
@@ -1026,6 +1041,7 @@ ALIASES: dict[str, list[str]] = {
     "booking": ["bookingcom"],
     "cocacola": ["coca-cola"],
     "hm": ["handm"],
+    "decidr": ["decidrai-1746526321"],
 }
 
 # Already in the registry; keep their existing, verified provider mapping.
@@ -1101,6 +1117,55 @@ async def request_json(
             return response.json()
         except ValueError:
             return None
+    return None
+
+
+async def request_text(
+    client: httpx.AsyncClient, url: str, params: dict[str, Any] | None = None
+) -> str | None:
+    for attempt in range(3):
+        try:
+            response = await client.get(url, params=params)
+        except httpx.HTTPError:
+            if attempt == 2:
+                return None
+            await asyncio.sleep(1.5 * (attempt + 1))
+            continue
+        if response.status_code == 404:
+            return None
+        if response.status_code == 429 or response.status_code >= 500:
+            if attempt == 2:
+                return None
+            retry_after = response.headers.get("retry-after")
+            delay = (
+                float(retry_after)
+                if retry_after and retry_after.replace(".", "", 1).isdigit()
+                else 2.0 * (attempt + 1)
+            )
+            await asyncio.sleep(min(delay, 20))
+            continue
+        if response.status_code != 200:
+            return None
+        return response.text
+    return None
+
+
+def _xml_count_and_title(
+    payload: str, item_path: str, title_path: str
+) -> tuple[int, str | None]:
+    try:
+        root = ET.fromstring(payload)
+    except ET.ParseError:
+        return 0, None
+    items = root.findall(item_path)
+    title = root.findtext(title_path)
+    return len(items), title.strip() if isinstance(title, str) and title.strip() else None
+
+
+def _xml_first_text(root: ET.Element, path: str) -> str | None:
+    for element in root.findall(path):
+        if isinstance(element.text, str) and element.text.strip():
+            return element.text.strip()
     return None
 
 
@@ -1229,11 +1294,119 @@ async def probe_smartrecruiters(
     )
 
 
+async def probe_recruitee(
+    client: httpx.AsyncClient, candidate: str, domain: str, token: str
+) -> Hit | None:
+    url = f"https://{token}.recruitee.com/api/offers"
+    payload = await request_json(client, url)
+    if not isinstance(payload, dict) or not isinstance(payload.get("offers"), list):
+        return None
+    offers = [offer for offer in payload["offers"] if isinstance(offer, dict)]
+    if not offers:
+        return None
+    reported = next(
+        (
+            str(offer["company_name"])
+            for offer in offers
+            if offer.get("company_name")
+        ),
+        None,
+    )
+    return Hit(
+        candidate=candidate,
+        domain=domain,
+        provider="recruitee",
+        board=token,
+        reported_name=reported,
+        jobs=len(offers),
+        source_url=f"https://{token}.recruitee.com/",
+        identity_ok=same_company(candidate, reported),
+    )
+
+
+async def probe_workable(
+    client: httpx.AsyncClient, candidate: str, domain: str, token: str
+) -> Hit | None:
+    url = f"https://apply.workable.com/api/v1/widget/accounts/{token}"
+    payload = await request_json(client, url, {"details": "true"})
+    if not isinstance(payload, dict) or not isinstance(payload.get("jobs"), list):
+        return None
+    jobs = [job for job in payload["jobs"] if isinstance(job, dict)]
+    if not jobs:
+        return None
+    reported = payload.get("name")
+    return Hit(
+        candidate=candidate,
+        domain=domain,
+        provider="workable",
+        board=token,
+        reported_name=str(reported) if reported else None,
+        jobs=len(jobs),
+        source_url=f"https://apply.workable.com/{token}/",
+        identity_ok=same_company(candidate, str(reported) if reported else None),
+    )
+
+
+async def probe_personio(
+    client: httpx.AsyncClient, candidate: str, domain: str, token: str
+) -> Hit | None:
+    url = f"https://{token}.jobs.personio.de/xml"
+    payload = await request_text(client, url, {"language": "en"})
+    if not payload:
+        return None
+    try:
+        root = ET.fromstring(payload)
+    except ET.ParseError:
+        return None
+    positions = root.findall("./position")
+    if not positions:
+        return None
+    reported = _xml_first_text(root, "./position/subcompany")
+    return Hit(
+        candidate=candidate,
+        domain=domain,
+        provider="personio",
+        board=token,
+        reported_name=reported,
+        jobs=len(positions),
+        source_url=f"https://{token}.jobs.personio.de/",
+        identity_ok=same_company(candidate, reported),
+    )
+
+
+async def probe_teamtailor(
+    client: httpx.AsyncClient, candidate: str, domain: str, token: str
+) -> Hit | None:
+    url = f"https://{token}.teamtailor.com/jobs.rss"
+    payload = await request_text(client, url, {"per_page": 200})
+    if not payload:
+        return None
+    count, reported = _xml_count_and_title(
+        payload, "./channel/item", "./channel/title"
+    )
+    if count <= 0:
+        return None
+    return Hit(
+        candidate=candidate,
+        domain=domain,
+        provider="teamtailor",
+        board=token,
+        reported_name=reported,
+        jobs=count,
+        source_url=f"https://{token}.teamtailor.com/jobs",
+        identity_ok=same_company(candidate, reported),
+    )
+
+
 PROBES = {
     "greenhouse": probe_greenhouse,
     "lever": probe_lever,
     "ashby": probe_ashby,
     "smartrecruiters": probe_smartrecruiters,
+    "recruitee": probe_recruitee,
+    "workable": probe_workable,
+    "personio": probe_personio,
+    "teamtailor": probe_teamtailor,
 }
 
 

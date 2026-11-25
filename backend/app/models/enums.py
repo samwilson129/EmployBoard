@@ -10,6 +10,10 @@ class ATSProvider(StrEnum):
     LEVER = "lever"
     ASHBY = "ashby"
     SMARTRECRUITERS = "smartrecruiters"
+    RECRUITEE = "recruitee"
+    WORKABLE = "workable"
+    PERSONIO = "personio"
+    TEAMTAILOR = "teamtailor"
 
 
 class EmploymentType(StrEnum):
@@ -56,6 +60,10 @@ PROVIDER_DISPLAY_NAMES: dict[str, str] = {
     ATSProvider.LEVER.value: "Lever",
     ATSProvider.ASHBY.value: "Ashby",
     ATSProvider.SMARTRECRUITERS.value: "SmartRecruiters",
+    ATSProvider.RECRUITEE.value: "Recruitee",
+    ATSProvider.WORKABLE.value: "Workable",
+    ATSProvider.PERSONIO.value: "Personio",
+    ATSProvider.TEAMTAILOR.value: "Teamtailor",
 }
 
 PROVIDER_DOCS: dict[str, str] = {
@@ -63,4 +71,12 @@ PROVIDER_DOCS: dict[str, str] = {
     ATSProvider.LEVER.value: "https://github.com/lever/postings-api",
     ATSProvider.ASHBY.value: "https://developers.ashbyhq.com/docs/public-job-posting-api",
     ATSProvider.SMARTRECRUITERS.value: "https://dev.smartrecruiters.com/",
+    ATSProvider.RECRUITEE.value: "https://docs.recruitee.com/reference/offers",
+    ATSProvider.WORKABLE.value: (
+        "https://help.workable.com/hc/en-us/articles/115012771647-Using-the-Workable-API"
+    ),
+    ATSProvider.PERSONIO.value: "https://developer.personio.de/v1.0/reference/get_xml",
+    ATSProvider.TEAMTAILOR.value: (
+        "https://support.teamtailor.com/en/articles/11171756-rss-feed-how-to-guide"
+    ),
 }

@@ -5,6 +5,7 @@ import re
 import unicodedata
 from datetime import UTC, datetime
 from decimal import Decimal, InvalidOperation
+from email.utils import parsedate_to_datetime
 from typing import Any
 
 _SCRIPT_STYLE_RE = re.compile(
@@ -138,14 +139,22 @@ def parse_datetime(value: Any) -> datetime | None:
         try:
             result = datetime.fromisoformat(raw)
         except ValueError:
-            for fmt in ("%Y-%m-%d", "%Y/%m/%d", "%d/%m/%Y"):
+            for fmt in (
+                "%Y-%m-%d",
+                "%Y/%m/%d",
+                "%d/%m/%Y",
+                "%Y-%m-%d %H:%M:%S UTC",
+            ):
                 try:
                     result = datetime.strptime(raw, fmt)
                     break
                 except ValueError:
                     continue
             else:
-                return None
+                try:
+                    result = parsedate_to_datetime(raw)
+                except (TypeError, ValueError, OverflowError):
+                    return None
     else:
         return None
 

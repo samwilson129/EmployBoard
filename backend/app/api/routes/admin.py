@@ -23,7 +23,7 @@ router = APIRouter(prefix="/admin", tags=["admin"])
 
 class SyncRequest(BaseModel):
     company_ids: list[uuid.UUID] | None = Field(default=None, max_length=100)
-    providers: list[str] | None = Field(default=None, max_length=4)
+    providers: list[str] | None = Field(default=None, max_length=8)
 
 
 async def _run_sync_in_background(

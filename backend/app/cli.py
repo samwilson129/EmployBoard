@@ -130,14 +130,36 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("seed", help="Insert or update the verified company registry")
 
     sync = sub.add_parser("sync", help="Run ingestion now")
-    sync.add_argument("--provider", choices=["greenhouse", "lever", "ashby", "smartrecruiters"])
+    sync.add_argument(
+        "--provider",
+        choices=[
+            "greenhouse",
+            "lever",
+            "ashby",
+            "smartrecruiters",
+            "recruitee",
+            "workable",
+            "personio",
+            "teamtailor",
+        ],
+    )
     sync.add_argument("--company", help="Company slug or UUID")
 
     verify = sub.add_parser(
         "verify", help="Fetch each configured source without writing to the database"
     )
     verify.add_argument(
-        "--provider", choices=["greenhouse", "lever", "ashby", "smartrecruiters"]
+        "--provider",
+        choices=[
+            "greenhouse",
+            "lever",
+            "ashby",
+            "smartrecruiters",
+            "recruitee",
+            "workable",
+            "personio",
+            "teamtailor",
+        ],
     )
     verify.add_argument("--company", help="Company slug or UUID")
 

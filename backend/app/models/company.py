@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from typing import TYPE_CHECKING, Any
 
-from sqlalchemy import Boolean, CheckConstraint, String, Text, UniqueConstraint, text
+from sqlalchemy import Boolean, CheckConstraint, Index, String, Text, UniqueConstraint, text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import Uuid
@@ -27,6 +27,12 @@ class Company(Base, TimestampMixin):
             + ", ".join(f"'{provider}'" for provider in ATS_PROVIDERS)
             + ")",
             name="ck_companies_ats_provider",
+        ),
+        Index(
+            "ix_companies_name_trgm",
+            "company_name",
+            postgresql_using="gin",
+            postgresql_ops={"company_name": "gin_trgm_ops"},
         ),
     )
 

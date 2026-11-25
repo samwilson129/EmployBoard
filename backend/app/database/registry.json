@@ -24,7 +24,7 @@
     "board_identifier": "1password",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Ashby public job posting API returned 79 live jobs; provider reports company name '1Password Jobs'.",
+      "verification_note": "Ashby public job posting API returned 78 live jobs; provider reports company name '1Password Jobs'.",
       "detail_limit": 0,
       "source_url": "https://jobs.ashbyhq.com/1password"
     }
@@ -39,7 +39,7 @@
     "board_identifier": "abnormalsecurity",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Greenhouse job board API returned 84 live jobs; provider reports company name 'Abnormal'.",
+      "verification_note": "Greenhouse job board API returned 85 live jobs; provider reports company name 'Abnormal'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/abnormalsecurity"
     }
@@ -99,7 +99,7 @@
     "board_identifier": "airbnb",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Greenhouse job board API returned 199 live jobs; provider reports company name 'Airbnb'.",
+      "verification_note": "Greenhouse job board API returned 200 live jobs; provider reports company name 'Airbnb'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/airbnb"
     }
@@ -234,7 +234,7 @@
     "board_identifier": "anthropic",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Greenhouse job board API returned 636 live jobs; provider reports company name 'Anthropic'.",
+      "verification_note": "Greenhouse job board API returned 635 live jobs; provider reports company name 'Anthropic'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/anthropic"
     }
@@ -428,7 +428,7 @@
     "board_identifier": "braze",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Greenhouse job board API returned 347 live jobs; provider reports company name 'Braze'.",
+      "verification_note": "Greenhouse job board API returned 351 live jobs; provider reports company name 'Braze'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/braze"
     }
@@ -443,7 +443,7 @@
     "board_identifier": "brex",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Greenhouse job board API returned 261 live jobs; provider reports company name 'Brex'.",
+      "verification_note": "Greenhouse job board API returned 264 live jobs; provider reports company name 'Brex'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/brex"
     }
@@ -458,9 +458,24 @@
     "board_identifier": "bridgebio",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Greenhouse job board API returned 87 live jobs; provider reports company name 'BridgeBio Pharma'.",
+      "verification_note": "Greenhouse job board API returned 86 live jobs; provider reports company name 'BridgeBio Pharma'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/bridgebio"
+    }
+  },
+  {
+    "company_name": "Bunq",
+    "company_slug": "bunq",
+    "company_logo_url": "https://www.google.com/s2/favicons?sz=128&domain=bunq.com",
+    "company_website": "https://bunq.com",
+    "careers_url": "https://bunq.recruitee.com/",
+    "ats_provider": "recruitee",
+    "board_identifier": "bunq",
+    "config": {
+      "verified_at": "2026-11-25",
+      "verification_note": "Recruitee public company offers API returned 23 live jobs; provider reports company name 'bunq'.",
+      "detail_limit": 0,
+      "source_url": "https://bunq.recruitee.com/"
     }
   },
   {
@@ -569,6 +584,21 @@
     }
   },
   {
+    "company_name": "Channable",
+    "company_slug": "channable",
+    "company_logo_url": "https://www.google.com/s2/favicons?sz=128&domain=channable.com",
+    "company_website": "https://channable.com",
+    "careers_url": "https://channable.recruitee.com/",
+    "ats_provider": "recruitee",
+    "board_identifier": "channable",
+    "config": {
+      "verified_at": "2026-11-25",
+      "verification_note": "Recruitee public company offers API returned 10 live jobs; provider reports company name 'Channable'.",
+      "detail_limit": 0,
+      "source_url": "https://channable.recruitee.com/"
+    }
+  },
+  {
     "company_name": "Character.AI",
     "company_slug": "characterai",
     "company_logo_url": "https://www.google.com/s2/favicons?sz=128&domain=character.ai",
@@ -653,7 +683,7 @@
     "board_identifier": "clickup",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Ashby public job posting API returned 49 live jobs; provider reports company name 'ClickUp Jobs'.",
+      "verification_note": "Ashby public job posting API returned 50 live jobs; provider reports company name 'ClickUp Jobs'.",
       "detail_limit": 0,
       "source_url": "https://jobs.ashbyhq.com/clickup"
     }
@@ -668,7 +698,7 @@
     "board_identifier": "cloudflare",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Greenhouse job board API returned 517 live jobs; provider reports company name 'Cloudflare'.",
+      "verification_note": "Greenhouse job board API returned 523 live jobs; provider reports company name 'Cloudflare'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/cloudflare"
     }
@@ -698,7 +728,7 @@
     "board_identifier": "cloverhealth",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Greenhouse job board API returned 53 live jobs; provider reports company name 'Clover Health'.",
+      "verification_note": "Greenhouse job board API returned 52 live jobs; provider reports company name 'Clover Health'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/cloverhealth"
     }
@@ -788,7 +818,7 @@
     "board_identifier": "Continental",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "SmartRecruiters public postings API returned 541 live jobs; provider reports company name 'Continental'. Descriptions are enriched from the documented posting detail endpoint for a bounded number of jobs per sync.",
+      "verification_note": "SmartRecruiters public postings API returned 543 live jobs; provider reports company name 'Continental'. Descriptions are enriched from the documented posting detail endpoint for a bounded number of jobs per sync.",
       "detail_limit": 100,
       "source_url": "https://careers.smartrecruiters.com/Continental"
     }
@@ -803,7 +833,7 @@
     "board_identifier": "coupang",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Greenhouse job board API returned 673 live jobs; provider reports company name 'Coupang'.",
+      "verification_note": "Greenhouse job board API returned 672 live jobs; provider reports company name 'Coupang'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/coupang"
     }
@@ -923,7 +953,7 @@
     "board_identifier": "datadog",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Greenhouse job board API returned 390 live jobs; provider reports company name 'Datadog'.",
+      "verification_note": "Greenhouse job board API returned 391 live jobs; provider reports company name 'Datadog'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/datadog"
     }
@@ -1073,7 +1103,7 @@
     "board_identifier": "duolingo",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Greenhouse job board API returned 53 live jobs; provider reports company name 'Duolingo'.",
+      "verification_note": "Greenhouse job board API returned 54 live jobs; provider reports company name 'Duolingo'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/duolingo"
     }
@@ -1253,7 +1283,7 @@
     "board_identifier": "figure",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Greenhouse job board API returned 31 live jobs; provider reports company name 'Figure Lending'.",
+      "verification_note": "Greenhouse job board API returned 30 live jobs; provider reports company name 'Figure Lending'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/figure"
     }
@@ -1394,6 +1424,21 @@
     }
   },
   {
+    "company_name": "GetJet Airlines",
+    "company_slug": "getjetairlines",
+    "company_logo_url": "https://www.google.com/s2/favicons?sz=128&domain=getjet.com",
+    "company_website": "https://getjet.com",
+    "careers_url": "https://getjet.jobs.personio.de/",
+    "ats_provider": "personio",
+    "board_identifier": "getjet",
+    "config": {
+      "verified_at": "2026-11-25",
+      "verification_note": "Personio public career-site XML feed returned 17 live jobs; provider reports company name 'GetJet Airlines UAB'.",
+      "detail_limit": 0,
+      "source_url": "https://getjet.jobs.personio.de/"
+    }
+  },
+  {
     "company_name": "Ginkgo Bioworks",
     "company_slug": "ginkgobioworks",
     "company_logo_url": "https://www.google.com/s2/favicons?sz=128&domain=ginkgobioworks.com",
@@ -1483,6 +1528,21 @@
     }
   },
   {
+    "company_name": "Grant Thornton",
+    "company_slug": "grantthornton",
+    "company_logo_url": "https://www.google.com/s2/favicons?sz=128&domain=grantthornton.com",
+    "company_website": "https://grantthornton.com",
+    "careers_url": "https://grantthornton.recruitee.com/",
+    "ats_provider": "recruitee",
+    "board_identifier": "grantthornton",
+    "config": {
+      "verified_at": "2026-11-25",
+      "verification_note": "Recruitee public company offers API returned 55 live jobs; provider reports company name 'Grant Thornton'.",
+      "detail_limit": 0,
+      "source_url": "https://grantthornton.recruitee.com/"
+    }
+  },
+  {
     "company_name": "Greenhouse Software",
     "company_slug": "greenhousesoftware",
     "company_logo_url": "https://www.google.com/s2/favicons?sz=128&domain=greenhouse.io",
@@ -1537,9 +1597,24 @@
     "board_identifier": "handshake",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Ashby public job posting API returned 72 live jobs; provider reports company name 'Handshake Jobs'.",
+      "verification_note": "Ashby public job posting API returned 71 live jobs; provider reports company name 'Handshake Jobs'.",
       "detail_limit": 0,
       "source_url": "https://jobs.ashbyhq.com/handshake"
+    }
+  },
+  {
+    "company_name": "Happeo",
+    "company_slug": "happeo",
+    "company_logo_url": "https://www.google.com/s2/favicons?sz=128&domain=happeo.com",
+    "company_website": "https://happeo.com",
+    "careers_url": "https://happeo.recruitee.com/",
+    "ats_provider": "recruitee",
+    "board_identifier": "happeo",
+    "config": {
+      "verified_at": "2026-11-25",
+      "verification_note": "Recruitee public company offers API returned 1 live jobs; provider reports company name 'Happeo'.",
+      "detail_limit": 0,
+      "source_url": "https://happeo.recruitee.com/"
     }
   },
   {
@@ -1552,7 +1627,7 @@
     "board_identifier": "hearst",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Greenhouse job board API returned 405 live jobs; provider reports company name 'Hearst'.",
+      "verification_note": "Greenhouse job board API returned 404 live jobs; provider reports company name 'Hearst'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/hearst"
     }
@@ -1600,6 +1675,21 @@
       "verification_note": "Greenhouse job board API returned 16 live jobs; provider reports company name 'HeyGen'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/heygen"
+    }
+  },
+  {
+    "company_name": "Hive",
+    "company_slug": "hive",
+    "company_logo_url": "https://www.google.com/s2/favicons?sz=128&domain=hive.com",
+    "company_website": "https://hive.com",
+    "careers_url": "https://boards.greenhouse.io/hive",
+    "ats_provider": "greenhouse",
+    "board_identifier": "hive",
+    "config": {
+      "verified_at": "2026-11-25",
+      "verification_note": "Greenhouse job board API returned 9 live jobs; provider reports company name 'Hive'.",
+      "detail_limit": 0,
+      "source_url": "https://boards.greenhouse.io/hive"
     }
   },
   {
@@ -1657,7 +1747,7 @@
     "board_identifier": "instacart",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Greenhouse job board API returned 98 live jobs; provider reports company name 'Instacart'.",
+      "verification_note": "Greenhouse job board API returned 99 live jobs; provider reports company name 'Instacart'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/instacart"
     }
@@ -1708,6 +1798,21 @@
     }
   },
   {
+    "company_name": "Jasper",
+    "company_slug": "jasper",
+    "company_logo_url": "https://www.google.com/s2/favicons?sz=128&domain=jasper.ai",
+    "company_website": "https://jasper.ai",
+    "careers_url": "https://apply.workable.com/jasper/",
+    "ats_provider": "workable",
+    "board_identifier": "jasper",
+    "config": {
+      "verified_at": "2026-11-25",
+      "verification_note": "Workable public careers widget API returned 1 live jobs; provider reports company name 'Jasper'.",
+      "detail_limit": 0,
+      "source_url": "https://apply.workable.com/jasper/"
+    }
+  },
+  {
     "company_name": "JetBrains",
     "company_slug": "jetbrains",
     "company_logo_url": "https://www.google.com/s2/favicons?sz=128&domain=jetbrains.com",
@@ -1732,7 +1837,7 @@
     "board_identifier": "justworks",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Greenhouse job board API returned 103 live jobs; provider reports company name 'Justworks'.",
+      "verification_note": "Greenhouse job board API returned 102 live jobs; provider reports company name 'Justworks'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/justworks"
     }
@@ -1807,7 +1912,7 @@
     "board_identifier": "knowbe4",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Greenhouse job board API returned 56 live jobs; provider reports company name 'KnowBe4'.",
+      "verification_note": "Greenhouse job board API returned 57 live jobs; provider reports company name 'KnowBe4'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/knowbe4"
     }
@@ -1942,7 +2047,7 @@
     "board_identifier": "lucidmotors",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Greenhouse job board API returned 508 live jobs; provider reports company name 'Lucid Motors'.",
+      "verification_note": "Greenhouse job board API returned 509 live jobs; provider reports company name 'Lucid Motors'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/lucidmotors"
     }
@@ -1972,7 +2077,7 @@
     "board_identifier": "lyft",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Greenhouse job board API returned 143 live jobs; provider reports company name 'Lyft'.",
+      "verification_note": "Greenhouse job board API returned 144 live jobs; provider reports company name 'Lyft'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/lyft"
     }
@@ -2128,6 +2233,21 @@
     }
   },
   {
+    "company_name": "Monday.com",
+    "company_slug": "mondaycom",
+    "company_logo_url": "https://www.google.com/s2/favicons?sz=128&domain=monday.com",
+    "company_website": "https://monday.com",
+    "careers_url": "https://monday.jobs.personio.de/",
+    "ats_provider": "personio",
+    "board_identifier": "monday",
+    "config": {
+      "verified_at": "2026-11-25",
+      "verification_note": "Personio public career-site XML feed returned 8 live jobs; provider reports company name 'Monday'.",
+      "detail_limit": 0,
+      "source_url": "https://monday.jobs.personio.de/"
+    }
+  },
+  {
     "company_name": "MongoDB",
     "company_slug": "mongodb",
     "company_logo_url": "https://www.google.com/s2/favicons?sz=128&domain=mongodb.com",
@@ -2152,7 +2272,7 @@
     "board_identifier": "montecarlodata",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Ashby public job posting API returned 11 live jobs; provider reports company name 'Monte Carlo Jobs'.",
+      "verification_note": "Ashby public job posting API returned 10 live jobs; provider reports company name 'Monte Carlo Jobs'.",
       "detail_limit": 0,
       "source_url": "https://jobs.ashbyhq.com/montecarlodata"
     }
@@ -2257,7 +2377,7 @@
     "board_identifier": "natera",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Greenhouse job board API returned 216 live jobs; provider reports company name 'Natera'.",
+      "verification_note": "Greenhouse job board API returned 217 live jobs; provider reports company name 'Natera'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/natera"
     }
@@ -2317,7 +2437,7 @@
     "board_identifier": "newrelic",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Greenhouse job board API returned 41 live jobs; provider reports company name 'New Relic'.",
+      "verification_note": "Greenhouse job board API returned 42 live jobs; provider reports company name 'New Relic'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/newrelic"
     }
@@ -2361,7 +2481,7 @@
     "board_identifier": "nubank",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Ashby public job posting API returned 107 live jobs; provider reports company name 'Nubank Jobs'.",
+      "verification_note": "Ashby public job posting API returned 106 live jobs; provider reports company name 'Nubank Jobs'.",
       "detail_limit": 0,
       "source_url": "https://jobs.ashbyhq.com/nubank"
     }
@@ -2382,6 +2502,21 @@
     }
   },
   {
+    "company_name": "Oatly",
+    "company_slug": "oatly",
+    "company_logo_url": "https://www.google.com/s2/favicons?sz=128&domain=oatly.com",
+    "company_website": "https://oatly.com",
+    "careers_url": "https://oatly.teamtailor.com/jobs",
+    "ats_provider": "teamtailor",
+    "board_identifier": "oatly",
+    "config": {
+      "verified_at": "2026-11-25",
+      "verification_note": "Teamtailor public jobs RSS feed returned 25 live jobs; provider reports company name 'Oatly AB'.",
+      "detail_limit": 0,
+      "source_url": "https://oatly.teamtailor.com/jobs"
+    }
+  },
+  {
     "company_name": "Okta",
     "company_slug": "okta",
     "company_logo_url": "https://www.google.com/s2/favicons?sz=128&domain=okta.com",
@@ -2391,7 +2526,7 @@
     "board_identifier": "okta",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Greenhouse job board API returned 369 live jobs; provider reports company name 'Okta'.",
+      "verification_note": "Greenhouse job board API returned 368 live jobs; provider reports company name 'Okta'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/okta"
     }
@@ -2427,6 +2562,21 @@
     }
   },
   {
+    "company_name": "Omnicare",
+    "company_slug": "omnicare",
+    "company_logo_url": "https://www.google.com/s2/favicons?sz=128&domain=omnicare.com",
+    "company_website": "https://omnicare.com",
+    "careers_url": "https://omnicare.jobs.personio.de/",
+    "ats_provider": "personio",
+    "board_identifier": "omnicare",
+    "config": {
+      "verified_at": "2026-11-25",
+      "verification_note": "Personio public career-site XML feed returned 6 live jobs; provider reports company name 'Omnicare Pharma GmbH'.",
+      "detail_limit": 0,
+      "source_url": "https://omnicare.jobs.personio.de/"
+    }
+  },
+  {
     "company_name": "One Medical",
     "company_slug": "onemedical",
     "company_logo_url": "https://www.google.com/s2/favicons?sz=128&domain=onemedical.com",
@@ -2451,7 +2601,7 @@
     "board_identifier": "onetrust",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Greenhouse job board API returned 77 live jobs; provider reports company name 'OneTrust'.",
+      "verification_note": "Greenhouse job board API returned 76 live jobs; provider reports company name 'OneTrust'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/onetrust"
     }
@@ -2510,7 +2660,7 @@
     "board_identifier": "oura",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Greenhouse job board API returned 100 live jobs; provider reports company name 'ŌURA'.",
+      "verification_note": "Greenhouse job board API returned 99 live jobs; provider reports company name 'ŌURA'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/oura"
     }
@@ -2629,7 +2779,7 @@
     "board_identifier": "peloton",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Greenhouse job board API returned 41 live jobs; provider reports company name 'Peloton'.",
+      "verification_note": "Greenhouse job board API returned 40 live jobs; provider reports company name 'Peloton'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/peloton"
     }
@@ -2665,6 +2815,21 @@
     }
   },
   {
+    "company_name": "Personio",
+    "company_slug": "personio",
+    "company_logo_url": "https://www.google.com/s2/favicons?sz=128&domain=personio.com",
+    "company_website": "https://personio.com",
+    "careers_url": "https://personio.jobs.personio.de/",
+    "ats_provider": "personio",
+    "board_identifier": "personio",
+    "config": {
+      "verified_at": "2026-11-25",
+      "verification_note": "Personio public career-site XML feed returned 6 live jobs; provider reports company name 'Personio Group SE'.",
+      "detail_limit": 0,
+      "source_url": "https://personio.jobs.personio.de/"
+    }
+  },
+  {
     "company_name": "Pinecone",
     "company_slug": "pinecone",
     "company_logo_url": "https://www.google.com/s2/favicons?sz=128&domain=pinecone.io",
@@ -2695,6 +2860,21 @@
     }
   },
   {
+    "company_name": "Pizza Hut",
+    "company_slug": "pizzahut",
+    "company_logo_url": "https://www.google.com/s2/favicons?sz=128&domain=pizzahut.com",
+    "company_website": "https://pizzahut.com",
+    "careers_url": "https://pizzahut.teamtailor.com/jobs",
+    "ats_provider": "teamtailor",
+    "board_identifier": "pizzahut",
+    "config": {
+      "verified_at": "2026-11-25",
+      "verification_note": "Teamtailor public jobs RSS feed returned 50 live jobs; provider reports company name 'Pizza Hut'.",
+      "detail_limit": 0,
+      "source_url": "https://pizzahut.teamtailor.com/jobs"
+    }
+  },
+  {
     "company_name": "Plaid",
     "company_slug": "plaid",
     "company_logo_url": "https://www.google.com/s2/favicons?sz=128&domain=plaid.com",
@@ -2722,6 +2902,21 @@
       "verification_note": "Greenhouse job board API returned 8 live jobs; provider reports company name 'PlanetScale'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/planetscale"
+    }
+  },
+  {
+    "company_name": "Polestar",
+    "company_slug": "polestar",
+    "company_logo_url": "https://www.google.com/s2/favicons?sz=128&domain=polestar.com",
+    "company_website": "https://polestar.com",
+    "careers_url": "https://polestar.teamtailor.com/jobs",
+    "ats_provider": "teamtailor",
+    "board_identifier": "polestar",
+    "config": {
+      "verified_at": "2026-11-25",
+      "verification_note": "Teamtailor public jobs RSS feed returned 14 live jobs; provider reports company name 'Polestar'.",
+      "detail_limit": 0,
+      "source_url": "https://polestar.teamtailor.com/jobs"
     }
   },
   {
@@ -2767,6 +2962,21 @@
       "verification_note": "Ashby public job posting API returned 5 live jobs; provider reports company name 'Prefect Jobs'.",
       "detail_limit": 0,
       "source_url": "https://jobs.ashbyhq.com/prefect"
+    }
+  },
+  {
+    "company_name": "Prismic",
+    "company_slug": "prismic",
+    "company_logo_url": "https://www.google.com/s2/favicons?sz=128&domain=prismic.io",
+    "company_website": "https://prismic.io",
+    "careers_url": "https://prismic.recruitee.com/",
+    "ats_provider": "recruitee",
+    "board_identifier": "prismic",
+    "config": {
+      "verified_at": "2026-11-25",
+      "verification_note": "Recruitee public company offers API returned 8 live jobs; provider reports company name 'Prismic'.",
+      "detail_limit": 0,
+      "source_url": "https://prismic.recruitee.com/"
     }
   },
   {
@@ -2854,9 +3064,24 @@
     "board_identifier": "ramp",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Ashby public job posting API returned 182 live jobs; provider reports company name 'Ramp Jobs'.",
+      "verification_note": "Ashby public job posting API returned 183 live jobs; provider reports company name 'Ramp Jobs'.",
       "detail_limit": 0,
       "source_url": "https://jobs.ashbyhq.com/ramp"
+    }
+  },
+  {
+    "company_name": "Randstad",
+    "company_slug": "randstad",
+    "company_logo_url": "https://www.google.com/s2/favicons?sz=128&domain=randstad.com",
+    "company_website": "https://randstad.com",
+    "careers_url": "https://randstad.jobs.personio.de/",
+    "ats_provider": "personio",
+    "board_identifier": "randstad",
+    "config": {
+      "verified_at": "2026-11-25",
+      "verification_note": "Personio public career-site XML feed returned 7 live jobs; provider reports company name 'Randstad Austria GmbH'.",
+      "detail_limit": 0,
+      "source_url": "https://randstad.jobs.personio.de/"
     }
   },
   {
@@ -2944,7 +3169,7 @@
     "board_identifier": "replit",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Ashby public job posting API returned 37 live jobs; provider reports company name 'Replit Jobs'.",
+      "verification_note": "Ashby public job posting API returned 38 live jobs; provider reports company name 'Replit Jobs'.",
       "detail_limit": 0,
       "source_url": "https://jobs.ashbyhq.com/replit"
     }
@@ -3019,7 +3244,7 @@
     "board_identifier": "rocketlab",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Greenhouse job board API returned 551 live jobs; provider reports company name 'Rocket Lab Corporation'.",
+      "verification_note": "Greenhouse job board API returned 549 live jobs; provider reports company name 'Rocket Lab Corporation'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/rocketlab"
     }
@@ -3184,7 +3409,7 @@
     "board_identifier": "singlestore",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Greenhouse job board API returned 43 live jobs; provider reports company name 'SingleStore'.",
+      "verification_note": "Greenhouse job board API returned 42 live jobs; provider reports company name 'SingleStore'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/singlestore"
     }
@@ -3318,7 +3543,7 @@
     "board_identifier": "spacex",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Greenhouse job board API returned 2,865 live jobs; provider reports company name 'SpaceX'.",
+      "verification_note": "Greenhouse job board API returned 2,867 live jobs; provider reports company name 'SpaceX'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/spacex"
     }
@@ -3437,7 +3662,7 @@
     "board_identifier": "stockx",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Greenhouse job board API returned 25 live jobs; provider reports company name 'StockX'.",
+      "verification_note": "Greenhouse job board API returned 24 live jobs; provider reports company name 'StockX'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/stockx"
     }
@@ -3467,7 +3692,7 @@
     "board_identifier": "stripe",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Greenhouse job board API returned 773 live jobs; provider reports company name 'Stripe'.",
+      "verification_note": "Greenhouse job board API returned 772 live jobs; provider reports company name 'Stripe'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/stripe"
     }
@@ -3602,7 +3827,7 @@
     "board_identifier": "thoropass",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Greenhouse job board API returned 8 live jobs; provider reports company name 'Thoropass'.",
+      "verification_note": "Greenhouse job board API returned 7 live jobs; provider reports company name 'Thoropass'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/thoropass"
     }
@@ -3665,6 +3890,21 @@
       "verification_note": "Lever public postings API returned 23 live jobs; provider reports company name 'Toptal'.",
       "detail_limit": 0,
       "source_url": "https://jobs.lever.co/toptal"
+    }
+  },
+  {
+    "company_name": "Toyota",
+    "company_slug": "toyota",
+    "company_logo_url": "https://www.google.com/s2/favicons?sz=128&domain=toyota.com",
+    "company_website": "https://toyota.com",
+    "careers_url": "https://toyota.teamtailor.com/jobs",
+    "ats_provider": "teamtailor",
+    "board_identifier": "toyota",
+    "config": {
+      "verified_at": "2026-11-25",
+      "verification_note": "Teamtailor public jobs RSS feed returned 3 live jobs; provider reports company name 'Toyota'.",
+      "detail_limit": 0,
+      "source_url": "https://toyota.teamtailor.com/jobs"
     }
   },
   {
@@ -3782,7 +4022,7 @@
     "board_identifier": "unbounce",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Greenhouse job board API returned 2 live jobs; provider reports company name 'Unbounce'.",
+      "verification_note": "Greenhouse job board API returned 3 live jobs; provider reports company name 'Unbounce'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/unbounce"
     }
@@ -3815,6 +4055,21 @@
       "verification_note": "Greenhouse job board API returned 4 live jobs; provider reports company name 'Upwork'.",
       "detail_limit": 0,
       "source_url": "https://boards.greenhouse.io/upwork"
+    }
+  },
+  {
+    "company_name": "Vandebron",
+    "company_slug": "vandebron",
+    "company_logo_url": "https://www.google.com/s2/favicons?sz=128&domain=vandebron.com",
+    "company_website": "https://vandebron.com",
+    "careers_url": "https://vandebron.recruitee.com/",
+    "ats_provider": "recruitee",
+    "board_identifier": "vandebron",
+    "config": {
+      "verified_at": "2026-11-25",
+      "verification_note": "Recruitee public company offers API returned 7 live jobs; provider reports company name 'Vandebron'.",
+      "detail_limit": 0,
+      "source_url": "https://vandebron.recruitee.com/"
     }
   },
   {
@@ -4142,7 +4397,7 @@
     "board_identifier": "zoox",
     "config": {
       "verified_at": "2026-11-25",
-      "verification_note": "Lever public postings API returned 248 live jobs; provider reports company name 'Zoox'.",
+      "verification_note": "Lever public postings API returned 246 live jobs; provider reports company name 'Zoox'.",
       "detail_limit": 0,
       "source_url": "https://jobs.lever.co/zoox"
     }

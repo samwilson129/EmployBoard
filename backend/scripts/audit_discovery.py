@@ -10,7 +10,16 @@ with open("scripts/board_discovery.json", encoding="utf-8") as handle:
 verified = data["verified"]
 print(f"verified={len(verified)} jobs={sum(v['jobs'] for v in verified):,}")
 print("\nBy provider:")
-for provider in ("greenhouse", "lever", "ashby", "smartrecruiters"):
+for provider in (
+    "greenhouse",
+    "lever",
+    "ashby",
+    "smartrecruiters",
+    "recruitee",
+    "workable",
+    "personio",
+    "teamtailor",
+):
     rows = [v for v in verified if v["provider"] == provider]
     print(f"  {provider:16} boards={len(rows):3} jobs={sum(r['jobs'] for r in rows):6,}")
 

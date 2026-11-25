@@ -6,7 +6,11 @@ from app.adapters.ashby import AshbyAdapter
 from app.adapters.base import ATSAdapter
 from app.adapters.greenhouse import GreenhouseAdapter
 from app.adapters.lever import LeverAdapter
+from app.adapters.personio import PersonioAdapter
+from app.adapters.recruitee import RecruiteeAdapter
 from app.adapters.smartrecruiters import SmartRecruitersAdapter
+from app.adapters.teamtailor import TeamtailorAdapter
+from app.adapters.workable import WorkableAdapter
 from app.config import Settings
 from app.models.enums import ATSProvider
 
@@ -15,6 +19,10 @@ _ADAPTERS: dict[str, type[ATSAdapter]] = {
     ATSProvider.LEVER.value: LeverAdapter,
     ATSProvider.ASHBY.value: AshbyAdapter,
     ATSProvider.SMARTRECRUITERS.value: SmartRecruitersAdapter,
+    ATSProvider.RECRUITEE.value: RecruiteeAdapter,
+    ATSProvider.WORKABLE.value: WorkableAdapter,
+    ATSProvider.PERSONIO.value: PersonioAdapter,
+    ATSProvider.TEAMTAILOR.value: TeamtailorAdapter,
 }
 
 

@@ -126,6 +126,52 @@ async def request_json(
     raise TransientAdapterError(f"Request failed for {url}: {last_error}")
 
 
+async def request_text(
+    client: httpx.AsyncClient,
+    url: str,
+    *,
+    params: dict[str, Any] | None = None,
+    max_retries: int = 3,
+) -> str:
+    """GET text with the same bounded retry policy as :func:`request_json`."""
+    last_error: Exception | None = None
+    for attempt in range(max_retries + 1):
+        try:
+            response = await client.get(url, params=params)
+        except (httpx.TimeoutException, httpx.NetworkError) as exc:
+            last_error = exc
+            if attempt >= max_retries:
+                raise TransientAdapterError(f"Network failure for {url}: {exc}") from exc
+            await asyncio.sleep(min(2**attempt + random.uniform(0, 0.4), 15))
+            continue
+
+        if response.status_code == 429 or 500 <= response.status_code < 600:
+            last_error = AdapterError(
+                f"HTTP {response.status_code} from {url}: {response.text[:200]}"
+            )
+            if attempt >= max_retries:
+                raise TransientAdapterError(str(last_error)) from last_error
+            delay = _retry_after_seconds(response)
+            if delay is None:
+                delay = min(2**attempt + random.uniform(0, 0.5), 20)
+            await asyncio.sleep(delay)
+            continue
+
+        if response.status_code == 404:
+            raise AdapterError(f"HTTP 404 from {url}: board or endpoint not found")
+        if response.status_code in (401, 403):
+            raise AdapterError(
+                f"HTTP {response.status_code} from {url}: access is not permitted"
+            )
+        if response.is_error:
+            raise AdapterError(
+                f"HTTP {response.status_code} from {url}: {response.text[:300]}"
+            )
+        return response.text
+
+    raise TransientAdapterError(f"Request failed for {url}: {last_error}")
+
+
 class ATSAdapter(ABC):
     provider: str
     display_name: str
@@ -151,6 +197,14 @@ class ATSAdapter(ABC):
 
     async def _get(self, url: str, params: dict[str, Any] | None = None) -> Any:
         return await request_json(
+            self.client,
+            url,
+            params=params,
+            max_retries=self.settings.http_max_retries,
+        )
+
+    async def _get_text(self, url: str, params: dict[str, Any] | None = None) -> str:
+        return await request_text(
             self.client,
             url,
             params=params,
