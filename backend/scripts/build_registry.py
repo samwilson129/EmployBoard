@@ -152,7 +152,21 @@ EXISTING: list[dict[str, Any]] = [
 EXCLUDED: set[tuple[str, str]] = {
     ("greenhouse", "remote"),
     ("lever", "neon"),
+    # The Lever board is a partner sandbox, not LinkedIn's public careers
+    # board.
+    ("lever", "linkedin"),
     ("smartrecruiters", "Together"),
+    # This token resolves to Flink Robotics, not Apache Flink.
+    ("ashby", "flink"),
+    # These SmartRecruiters boards are historical/abandoned postings rather
+    # than current public career feeds.
+    ("smartrecruiters", "FORWARD"),
+    ("smartrecruiters", "Fiverr"),
+    ("smartrecruiters", "Zenefits"),
+    ("smartrecruiters", "Bytedance"),
+    ("smartrecruiters", "Resmed"),
+    ("smartrecruiters", "Wework"),
+    ("smartrecruiters", "UniversalMusicGroup"),
     ("smartrecruiters", "Wayfair"),
     ("smartrecruiters", "GONG"),
     ("smartrecruiters", "Glean"),
@@ -261,6 +275,22 @@ def main() -> None:
         if int(hit.get("jobs") or 0) <= 0:
             continue
         candidates.append(hit)
+
+    # A second-pass candidate list can contain aliases or capitalization
+    # variants for the same board. Keep one registry row per provider board.
+    deduplicated: dict[tuple[str, str], dict[str, Any]] = {}
+    for hit in candidates:
+        key = (hit["provider"], hit["board"])
+        current = deduplicated.get(key)
+        if current is None or (
+            int(hit["jobs"]),
+            str(hit["candidate"]).lower(),
+        ) > (
+            int(current["jobs"]),
+            str(current["candidate"]).lower(),
+        ):
+            deduplicated[key] = hit
+    candidates = list(deduplicated.values())
 
     entries = [dict(entry) for entry in EXISTING]
     for hit in candidates:
