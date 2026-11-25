@@ -510,6 +510,16 @@ The registry is seeded through:
 python -m app.cli seed
 ```
 
+Generated registry expansions are audited with:
+
+```bash
+python scripts/validate_registry_quality.py
+```
+
+The audit keeps only boards with live official-feed results, matching provider
+identity, reachable careers pages, and reachable representative application
+links. It also excludes obvious recruitment intermediaries and demo/test boards.
+
 ### Registry design decision
 
 Company information is stored separately from job postings.

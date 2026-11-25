@@ -26,7 +26,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DISCOVERY_PATH = ROOT / "scripts" / "board_discovery.json"
 OUTPUT_PATH = ROOT / "app" / "database" / "registry.json"
 
-VERIFIED_AT = "2026-11-25"
+VERIFIED_AT = "2026-11-26"
 
 
 def _logo(domain: str) -> str:
@@ -241,6 +241,9 @@ def _entry(hit: dict[str, Any]) -> dict[str, Any]:
     slug = SLUG_OVERRIDES.get((provider, board), _slug(name))
     domain = hit["domain"]
     reported = hit["reported_name"] or "unknown"
+    if "\ufffd" in name and reported != "unknown":
+        name = reported
+        slug = _slug(name)
     jobs = int(hit["jobs"])
 
     note = (
@@ -308,6 +311,21 @@ def main() -> None:
         ):
             deduplicated[key] = hit
     candidates = list(deduplicated.values())
+
+    # A company can operate multiple regional or subsidiary boards on the
+    # same ATS. The application stores one company row, so retain the board
+    # with the largest verified live-posting count rather than creating
+    # duplicate company slugs.
+    by_company: dict[str, dict[str, Any]] = {}
+    for hit in sorted(candidates, key=lambda item: -int(item["jobs"])):
+        name = NAME_OVERRIDES.get(
+            (hit["provider"], hit["board"]), hit["candidate"]
+        )
+        if "\ufffd" in name and hit.get("reported_name"):
+            name = hit["reported_name"]
+        key = _slug(name)
+        by_company.setdefault(key, hit)
+    candidates = list(by_company.values())
 
     entries = [dict(entry) for entry in EXISTING]
     for hit in candidates:
