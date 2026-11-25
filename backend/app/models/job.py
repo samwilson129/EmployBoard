@@ -59,6 +59,12 @@ class Job(Base, TimestampMixin):
             name="ck_jobs_salary_order",
         ),
         Index("ix_jobs_company_active", "company_id", "is_active"),
+        Index("ix_jobs_company_requisition", "company_id", "requisition_id"),
+        Index(
+            "ix_jobs_company_normalized_title",
+            "company_id",
+            "normalized_title",
+        ),
         Index("ix_jobs_active_posted", "is_active", text("posted_at DESC")),
         Index("ix_jobs_active_updated", "is_active", text("updated_at DESC")),
         Index("ix_jobs_employment_type", "employment_type"),

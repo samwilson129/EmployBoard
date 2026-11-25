@@ -7,6 +7,7 @@ from app.adapters.base import ATSAdapter, AdapterJob
 from app.models.company import Company
 from app.models.enums import ATSProvider
 from app.utils.text import (
+    clean_requisition_id,
     clean_url,
     normalize_whitespace,
     parse_datetime,
@@ -140,9 +141,7 @@ class SmartRecruitersAdapter(ATSAdapter):
         posting_url = (
             f"https://jobs.smartrecruiters.com/{company.board_identifier}/{external_id}"
         )
-        requisition_id = raw.get("refNumber")
-        if requisition_id is not None:
-            requisition_id = str(requisition_id).strip() or None
+        requisition_id = clean_requisition_id(raw.get("refNumber"))
 
         return AdapterJob(
             external_job_id=str(external_id),
@@ -203,9 +202,7 @@ class SmartRecruitersAdapter(ATSAdapter):
                 elif key == "jobDescription":
                     responsibilities.append(text.strip())
 
-        requisition_id = raw.get("refNumber")
-        if requisition_id is not None:
-            requisition_id = str(requisition_id).strip() or None
+        requisition_id = clean_requisition_id(raw.get("refNumber"))
 
         return AdapterJob(
             external_job_id=str(external_id),

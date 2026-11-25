@@ -70,6 +70,21 @@ class JobSyncService:
         now = now or datetime.now(UTC)
         stats = SyncStats()
 
+        existing_providers = set(
+            (
+                await session.scalars(
+                    select(JobSource.ats_provider)
+                    .join(Job, Job.job_id == JobSource.job_id)
+                    .where(Job.company_id == company.company_id)
+                    .distinct()
+                )
+            ).all()
+        )
+        # Cross-source flagging only has meaning when the company already has a
+        # job from a different provider. Most companies use one ATS board, so
+        # skipping the query keeps a large import linear instead of quadratic.
+        flag_cross_source = bool(existing_providers - {adapter.provider})
+
         adapter_jobs = await adapter.fetch_jobs(company)
         stats.fetched = len(adapter_jobs)
         logger.info(
@@ -86,7 +101,12 @@ class JobSyncService:
                 async with session.begin_nested():
                     normalized = normalize_adapter_job(adapter_job, company)
                     outcome = await self._upsert_job(
-                        session, company, adapter.provider, normalized, now
+                        session,
+                        company,
+                        adapter.provider,
+                        normalized,
+                        now,
+                        flag_cross_source=flag_cross_source,
                     )
                 if outcome == "inserted":
                     stats.inserted += 1
@@ -135,6 +155,8 @@ class JobSyncService:
         provider: str,
         job: NormalizedJob,
         now: datetime,
+        *,
+        flag_cross_source: bool = True,
     ) -> str:
         source = await session.scalar(
             select(JobSource)
@@ -158,7 +180,11 @@ class JobSyncService:
             return "updated"
 
         canonical = await find_requisition_match(
-            session, company.company_id, job.requisition_id
+            session,
+            company.company_id,
+            job.requisition_id,
+            normalized_title=job.normalized_title,
+            normalized_location=job.normalized_location,
         )
         if canonical is not None:
             self._apply_job_fields(canonical, job, now, preserve_missing=True)
@@ -212,17 +238,18 @@ class JobSyncService:
             last_seen_at=now,
         )
 
-        candidate = await find_cross_source_candidate(
-            session, company.company_id, job, provider
-        )
-        if candidate is not None:
-            canonical.duplicate_of_job_id = candidate.job_id
-            logger.info(
-                "Flagged possible cross-source duplicate %s -> %s for %s",
-                job.external_job_id,
-                candidate.job_id,
-                company.company_name,
+        if flag_cross_source:
+            candidate = await find_cross_source_candidate(
+                session, company.company_id, job, provider
             )
+            if candidate is not None:
+                canonical.duplicate_of_job_id = candidate.job_id
+                logger.info(
+                    "Flagged possible cross-source duplicate %s -> %s for %s",
+                    job.external_job_id,
+                    candidate.job_id,
+                    company.company_name,
+                )
 
         session.add(canonical)
         await session.flush()

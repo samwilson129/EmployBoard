@@ -172,6 +172,59 @@ def parse_decimal(value: Any) -> Decimal | None:
     return None
 
 
+_REQUISITION_PLACEHOLDERS = {
+    "n a",
+    "na",
+    "none",
+    "null",
+    "nil",
+    "unknown",
+    "tbd",
+    "to be determined",
+    "not applicable",
+    "not specified",
+    "no requisition id",
+    "see opening",
+    "see opening id",
+    "see job id",
+    "opening id",
+    "job id",
+    "requisition",
+    "requisition id",
+    "req",
+    "req id",
+    "multiple",
+    "multi",
+    "mul",
+    "one",
+}
+
+
+def clean_requisition_id(value: Any) -> str | None:
+    """Return a usable requisition identifier, or None for placeholders.
+
+    Several public boards expose a shared placeholder such as "See Opening ID"
+    or "MULTI" for every posting. Treating those as real requisition numbers
+    would collapse hundreds of distinct vacancies into one record, so they are
+    discarded here. The sync service also requires a matching title and
+    location before it uses a requisition identifier for deduplication.
+    """
+    if value is None:
+        return None
+    text = normalize_whitespace(str(value))
+    if not text:
+        return None
+    key = re.sub(r"[^a-z0-9]+", " ", text.lower()).strip()
+    if not key or key in _REQUISITION_PLACEHOLDERS:
+        return None
+    # Short values without a digit are usually labels such as "ONE." or "MUL".
+    if len(key) <= 12 and not any(char.isdigit() for char in text):
+        return None
+    if len(text) > 100:
+        return None
+    return text
+
+
 def normalize_currency(value: Any) -> str | None:
     if not isinstance(value, str):
         return None

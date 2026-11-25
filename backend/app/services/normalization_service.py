@@ -121,6 +121,8 @@ _EXPERIENCE_MAP: dict[str, str] = {
     "associate": ExperienceLevel.JUNIOR.value,
     "mid": ExperienceLevel.MID.value,
     "mid level": ExperienceLevel.MID.value,
+    "mid senior": ExperienceLevel.MID.value,
+    "mid senior level": ExperienceLevel.MID.value,
     "intermediate": ExperienceLevel.MID.value,
     "professional": ExperienceLevel.MID.value,
     "senior": ExperienceLevel.SENIOR.value,

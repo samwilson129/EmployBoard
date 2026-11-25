@@ -15,12 +15,19 @@ async def find_requisition_match(
     company_id: uuid.UUID,
     requisition_id: str | None,
     *,
+    normalized_title: str,
+    normalized_location: str | None,
     exclude_job_id: uuid.UUID | None = None,
 ) -> Job | None:
     """Match a requisition identifier inside one company.
 
     This is level 2 of the deduplication hierarchy. It is intentionally scoped
     to a single company; a requisition number is not globally unique.
+
+    Public boards frequently reuse one requisition identifier for many
+    locations, or even several roles. The title and location must therefore
+    match as well, otherwise an import would collapse distinct vacancies into
+    a single record.
     """
     if not requisition_id:
         return None
@@ -29,11 +36,16 @@ async def find_requisition_match(
         .where(
             Job.company_id == company_id,
             Job.requisition_id == requisition_id,
+            Job.normalized_title == normalized_title,
             Job.is_active.is_(True),
         )
         .order_by(Job.created_at.asc())
         .limit(1)
     )
+    if normalized_location is None:
+        stmt = stmt.where(Job.normalized_location.is_(None))
+    else:
+        stmt = stmt.where(Job.normalized_location == normalized_location)
     if exclude_job_id is not None:
         stmt = stmt.where(Job.job_id != exclude_job_id)
     return await session.scalar(stmt)
