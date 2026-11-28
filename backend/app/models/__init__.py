@@ -10,6 +10,8 @@ from app.models.enums import (
 from app.models.ingestion_run import IngestionRun
 from app.models.job import Job
 from app.models.job_source import JobSource
+from app.models.job_description_cache import JobDescriptionCache
+from app.models.job_description_negative_cache import JobDescriptionNegativeCache
 
 __all__ = [
     "ATSProvider",
@@ -20,6 +22,8 @@ __all__ = [
     "IngestionRun",
     "Job",
     "JobSource",
+    "JobDescriptionCache",
+    "JobDescriptionNegativeCache",
     "RunStatus",
     "TimestampMixin",
     "WorkplaceType",

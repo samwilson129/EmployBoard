@@ -60,7 +60,7 @@ def job_to_list_item(job: Job) -> JobListItem:
         salary_max=float(job.salary_max) if job.salary_max is not None else None,
         salary_currency=job.salary_currency,
         salary_interval=job.salary_interval,
-        description_snippet=make_snippet(job.description),
+        description_snippet=job.description_snippet,
         posted_at=job.posted_at,
         first_seen_at=job.first_seen_at,
         last_seen_at=job.last_seen_at,
@@ -73,14 +73,22 @@ def job_to_list_item(job: Job) -> JobListItem:
     )
 
 
-def job_to_detail(job: Job) -> JobDetail:
+def job_to_detail(
+    job: Job,
+    *,
+    description: str | None = None,
+    requirements: str | None = None,
+    responsibilities: str | None = None,
+    skills: list[str] | None = None,
+) -> JobDetail:
     item = job_to_list_item(job)
     return JobDetail(
         **item.model_dump(),
-        description=job.description,
-        requirements=job.requirements,
-        responsibilities=job.responsibilities,
-        skills=job.skills,
+        description=description,
+        description_available=description is not None,
+        requirements=requirements,
+        responsibilities=responsibilities,
+        skills=skills if skills is not None else job.skills,
         expires_at=job.expires_at,
         requisition_id=job.requisition_id,
         sources=source_refs(job),

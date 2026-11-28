@@ -117,6 +117,7 @@ class JobListItem(BaseModel):
 
 class JobDetail(JobListItem):
     description: str | None = None
+    description_available: bool = False
     requirements: str | None = None
     responsibilities: str | None = None
     skills: list[str] | None = None
@@ -161,6 +162,11 @@ class IngestionRunOut(BaseModel):
     jobs_updated: int
     jobs_deactivated: int
     jobs_skipped: int
+    api_requests: int = 0
+    api_rate_limits: int = 0
+    api_failures: int = 0
+    average_response_ms: float = 0
+    consecutive_failures: int = 0
     errors: list[dict[str, Any]] = Field(default_factory=list)
     error_message: str | None = None
 

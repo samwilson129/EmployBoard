@@ -13,6 +13,7 @@ from app.adapters.teamtailor import TeamtailorAdapter
 from app.adapters.workable import WorkableAdapter
 from app.config import Settings
 from app.models.enums import ATSProvider
+from app.services.ats_request_manager import ATSRequestManager
 
 _ADAPTERS: dict[str, type[ATSAdapter]] = {
     ATSProvider.GREENHOUSE.value: GreenhouseAdapter,
@@ -27,10 +28,13 @@ _ADAPTERS: dict[str, type[ATSAdapter]] = {
 
 
 def build_adapter(
-    provider: str, client: httpx.AsyncClient, settings: Settings
+    provider: str,
+    client: httpx.AsyncClient,
+    settings: Settings,
+    request_manager: ATSRequestManager | None = None,
 ) -> ATSAdapter:
     try:
         adapter_class = _ADAPTERS[provider]
     except KeyError as exc:
         raise ValueError(f"Unsupported ATS provider: {provider}") from exc
-    return adapter_class(client, settings)
+    return adapter_class(client, settings, request_manager)

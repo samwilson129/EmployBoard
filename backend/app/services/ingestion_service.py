@@ -15,6 +15,8 @@ from app.config import Settings
 from app.models.company import Company
 from app.models.ingestion_run import IngestionRun
 from app.services.job_sync_service import JobSyncService, SyncStats
+from app.services.ats_request_manager import ATSRequestManager
+from app.services.description_cache_service import DescriptionCacheService
 
 logger = logging.getLogger(__name__)
 
@@ -68,11 +70,22 @@ class IngestionService:
                         max_connections=10, max_keepalive_connections=5
                     ),
                 ) as client:
+                    request_manager = ATSRequestManager(client, self.settings)
                     for company in companies:
-                        result = await self._sync_one(company, client)
+                        result = await self._sync_one(
+                            company, client, request_manager
+                        )
                         results.append(result)
                         # Be polite between independent public sources.
                         await asyncio.sleep(0.5)
+
+                async with self.session_factory() as cache_session:
+                    cache_result = await DescriptionCacheService(
+                        self.session_factory, self.settings
+                    ).cleanup(cache_session)
+                    logger.info(
+                        "Ingestion cache maintenance finished: %s", cache_result
+                    )
 
                 finished_at = datetime.now(UTC)
                 totals = {
@@ -140,12 +153,18 @@ class IngestionService:
             return list((await session.scalars(stmt)).all())
 
     async def _sync_one(
-        self, company: Company, client: httpx.AsyncClient
+        self,
+        company: Company,
+        client: httpx.AsyncClient,
+        request_manager: ATSRequestManager,
     ) -> dict[str, Any]:
         run_id = await self._start_run(company)
         started_at = datetime.now(UTC)
+        before = request_manager.metrics().get(company.ats_provider, {})
         try:
-            adapter = build_adapter(company.ats_provider, client, self.settings)
+            adapter = build_adapter(
+                company.ats_provider, client, self.settings, request_manager
+            )
             async with self.session_factory() as session:
                 canonical_company = await session.get(Company, company.company_id)
                 if canonical_company is None:
@@ -155,7 +174,13 @@ class IngestionService:
                 )
                 await session.commit()
             status = "success" if not stats.errors else "partial"
-            await self._finish_run(run_id, status, stats)
+            after = request_manager.metrics().get(company.ats_provider, {})
+            await self._finish_run(
+                run_id,
+                status,
+                stats,
+                request_metrics=self._metric_delta(before, after),
+            )
             return {
                 "run_id": str(run_id),
                 "company_id": str(company.company_id),
@@ -172,7 +197,14 @@ class IngestionService:
                 company.company_name,
                 company.ats_provider,
             )
-            await self._finish_run(run_id, "failed", None, error=str(exc))
+            after = request_manager.metrics().get(company.ats_provider, {})
+            await self._finish_run(
+                run_id,
+                "failed",
+                None,
+                error=str(exc),
+                request_metrics=self._metric_delta(before, after),
+            )
             return {
                 "run_id": str(run_id),
                 "company_id": str(company.company_id),
@@ -205,11 +237,22 @@ class IngestionService:
         stats: SyncStats | None,
         *,
         error: str | None = None,
+        request_metrics: dict[str, float] | None = None,
     ) -> None:
         async with self.session_factory() as session:
             run = await session.get(IngestionRun, run_id)
             if run is None:
                 return
+            previous = await session.scalar(
+                select(IngestionRun)
+                .where(
+                    IngestionRun.company_id == run.company_id,
+                    IngestionRun.run_id != run_id,
+                    IngestionRun.finished_at.is_not(None),
+                )
+                .order_by(IngestionRun.started_at.desc())
+                .limit(1)
+            )
             run.status = status
             run.finished_at = datetime.now(UTC)
             if stats is not None:
@@ -219,8 +262,39 @@ class IngestionService:
                 run.jobs_deactivated = stats.deactivated
                 run.jobs_skipped = stats.skipped
                 run.errors = stats.errors
+            metrics = request_metrics or {}
+            run.api_requests = int(metrics.get("requests", 0))
+            run.api_rate_limits = int(metrics.get("rate_limits", 0))
+            run.api_failures = int(metrics.get("failures", 0))
+            run.average_response_ms = float(metrics.get("average_response_ms", 0))
+            if status == "failed":
+                run.consecutive_failures = (
+                    (previous.consecutive_failures if previous else 0) + 1
+                )
+            else:
+                run.consecutive_failures = 0
             run.error_message = error
             await session.commit()
+
+    @staticmethod
+    def _metric_delta(
+        before: dict[str, float], after: dict[str, float]
+    ) -> dict[str, float]:
+        return {
+            key: max(0, after.get(key, 0) - before.get(key, 0))
+            for key in ("requests", "rate_limits", "failures")
+        } | {
+            "average_response_ms": (
+                (
+                    after.get("total_response_ms", 0)
+                    - before.get("total_response_ms", 0)
+                )
+                / max(
+                    1,
+                    after.get("requests", 0) - before.get("requests", 0),
+                )
+            )
+        }
 
 
 async def run_scheduled_sync(

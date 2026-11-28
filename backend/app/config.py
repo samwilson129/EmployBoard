@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from functools import lru_cache
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
@@ -93,10 +94,21 @@ class Settings(BaseSettings):
 
     http_timeout_seconds: float = Field(default=30.0, gt=0)
     http_max_retries: int = Field(default=3, ge=0, le=8)
+    ats_request_config_json: str = "{}"
+    ats_default_requests_per_minute: int = Field(default=120, ge=1)
+    ats_default_max_concurrency: int = Field(default=8, ge=1)
+    ats_default_retry_delay_seconds: float = Field(default=0.5, ge=0)
+    ats_default_max_retry_delay_seconds: float = Field(default=20.0, gt=0)
+    ats_default_backoff_multiplier: float = Field(default=2.0, ge=1)
     user_agent: str = (
         "EmployBoard/1.0 (public job aggregation; contact: admin@employboard.example)"
     )
     smartrecruiters_detail_limit: int = Field(default=100, ge=0, le=1000)
+
+    job_description_cache_max_entries: int = Field(default=10_000, ge=1)
+    job_description_cache_ttl_hours: int = Field(default=24, ge=1)
+    job_description_negative_ttl_minutes: int = Field(default=15, ge=1)
+    cache_maintenance_interval_hours: int = Field(default=1, ge=1, le=168)
 
     deactivation_miss_threshold: int = Field(default=2, ge=1, le=10)
     deactivation_min_fetch_ratio: float = Field(default=0.25, ge=0.0, le=1.0)
@@ -124,6 +136,14 @@ class Settings(BaseSettings):
     def cors_origin_list(self) -> list[str]:
         values = [value.strip() for value in self.cors_origins.split(",")]
         return [value for value in values if value]
+
+    @property
+    def ats_request_config(self) -> dict[str, dict[str, object]]:
+        try:
+            value = json.loads(self.ats_request_config_json)
+        except json.JSONDecodeError:
+            return {}
+        return value if isinstance(value, dict) else {}
 
     @property
     def redacted_database_url(self) -> str:

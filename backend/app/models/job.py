@@ -26,6 +26,8 @@ from app.models.enums import EMPLOYMENT_TYPES, EXPERIENCE_LEVELS, WORKPLACE_TYPE
 
 if TYPE_CHECKING:
     from app.models.company import Company
+    from app.models.job_description_cache import JobDescriptionCache
+    from app.models.job_description_negative_cache import JobDescriptionNegativeCache
     from app.models.job_source import JobSource
 
 
@@ -115,6 +117,7 @@ class Job(Base, TimestampMixin):
     salary_interval: Mapped[str | None] = mapped_column(String(32), nullable=True)
 
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    description_snippet: Mapped[str | None] = mapped_column(String(500), nullable=True)
     requirements: Mapped[str | None] = mapped_column(Text, nullable=True)
     responsibilities: Mapped[str | None] = mapped_column(Text, nullable=True)
     skills: Mapped[list[str] | None] = mapped_column(JSONB, nullable=True)
@@ -145,22 +148,26 @@ class Job(Base, TimestampMixin):
     last_seen_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=text("now()")
     )
+    last_verified_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
     company: Mapped["Company"] = relationship(back_populates="jobs")
     sources: Mapped[list["JobSource"]] = relationship(
         back_populates="job", cascade="all, delete-orphan"
     )
+    description_cache: Mapped["JobDescriptionCache | None"] = relationship(
+        back_populates="job", uselist=False, cascade="all, delete-orphan"
+    )
+    description_negative_cache: Mapped[
+        "JobDescriptionNegativeCache | None"
+    ] = relationship(
+        back_populates="job", uselist=False, cascade="all, delete-orphan"
+    )
 
     @property
     def source_providers(self) -> list[str]:
         return sorted({source.ats_provider for source in self.sources})
-
-    @property
-    def last_verified_at(self) -> datetime | None:
-        values = [
-            source.last_verified_at or source.fetched_at for source in self.sources
-        ]
-        return max(values) if values else None
 
     @property
     def metadata_json(self) -> dict[str, Any]:

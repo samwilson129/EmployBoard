@@ -7,6 +7,7 @@ from typing import Any
 from sqlalchemy import (
     CheckConstraint,
     DateTime,
+    Float,
     ForeignKey,
     Index,
     Integer,
@@ -76,6 +77,21 @@ class IngestionRun(Base):
         Integer, nullable=False, default=0, server_default=text("0")
     )
     jobs_skipped: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=0, server_default=text("0")
+    )
+    api_requests: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=0, server_default=text("0")
+    )
+    api_rate_limits: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=0, server_default=text("0")
+    )
+    api_failures: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=0, server_default=text("0")
+    )
+    average_response_ms: Mapped[float] = mapped_column(
+        Float(), nullable=False, default=0, server_default=text("0")
+    )
+    consecutive_failures: Mapped[int] = mapped_column(
         Integer, nullable=False, default=0, server_default=text("0")
     )
     errors: Mapped[list[dict[str, Any]]] = mapped_column(

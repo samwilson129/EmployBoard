@@ -14,6 +14,7 @@ from app.database.connection import SessionLocal, dispose_engine
 from app.database.seed import seed_companies
 from app.logging_config import configure_logging
 from app.services.ingestion_service import run_scheduled_sync
+from app.services.description_cache_service import run_cache_maintenance
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -52,6 +53,17 @@ async def lifespan(app: FastAPI):
             coalesce=True,
             misfire_grace_time=3600,
         )
+        scheduler.add_job(
+            run_cache_maintenance,
+            "interval",
+            hours=settings.cache_maintenance_interval_hours,
+            args=[SessionLocal, settings],
+            id="employboard-description-cache-maintenance",
+            replace_existing=True,
+            max_instances=1,
+            coalesce=True,
+            misfire_grace_time=3600,
+        )
         scheduler.start()
         logger.info(
             "In-process ingestion scheduler started (every %s hours)",
@@ -71,8 +83,8 @@ app = FastAPI(
     title="EmployBoard API",
     version=__version__,
     description=(
-        "Public job aggregation API. Normalizes postings from eight public ATS "
-        "providers into one schema."
+        "Public job aggregation API. Normalizes postings from configured public "
+        "ATS providers into one schema."
     ),
     lifespan=lifespan,
 )

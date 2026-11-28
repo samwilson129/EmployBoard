@@ -530,6 +530,32 @@ The unique constraint on `(ats_provider, board_identifier)` prevents duplicate b
 
 Adding a company that uses an existing provider generally requires a new registry entry rather than a new adapter.
 
+### Job ledger and description cache
+
+`jobs` is the permanent searchable ledger. It retains stable job IDs,
+provider-independent metadata, posting state and a short card snippet; full
+descriptions are not written during scheduled ingestion. Full text is stored
+separately in `job_description_cache`, which is bounded by
+`JOB_DESCRIPTION_CACHE_MAX_ENTRIES` and evicts least-recently-accessed rows.
+Expired and unavailable lookups are maintained independently in the negative
+cache. Job details load the ledger immediately and fetch cache misses lazily
+through the adapter capability supported by that provider.
+
+The shared ATS request manager applies provider-specific concurrency, request
+budgets, retries, `Retry-After` handling, metrics and identical-request
+coalescing. Configure provider overrides with the JSON
+`ATS_REQUEST_CONFIG_JSON` setting, for example:
+
+```json
+{
+  "greenhouse": {"requests_per_minute": 60, "max_concurrency": 4},
+  "workable": {"requests_per_minute": 30, "max_concurrency": 2}
+}
+```
+
+The cache is maintained by the scheduler and can be inspected by an
+administrator at `GET /api/admin/cache`.
+
 ---
 
 # 8. Data Ingestion Pipeline
@@ -2150,10 +2176,20 @@ The configuration layer converts compatible PostgreSQL connection strings into t
 | `SEED_ON_STARTUP` | false | Seeds company registry at startup |
 | `HTTP_TIMEOUT_SECONDS` | 30 | External request timeout |
 | `HTTP_MAX_RETRIES` | 3 | Maximum retries |
+| `ATS_REQUEST_CONFIG_JSON` | `{}` | Per-provider request budgets, concurrency and backoff overrides |
+| `ATS_DEFAULT_REQUESTS_PER_MINUTE` | 120 | Default provider request budget |
+| `ATS_DEFAULT_MAX_CONCURRENCY` | 8 | Default provider concurrency |
+| `ATS_DEFAULT_RETRY_DELAY_SECONDS` | 0.5 | Initial retry delay |
+| `ATS_DEFAULT_MAX_RETRY_DELAY_SECONDS` | 20 | Maximum retry delay |
+| `ATS_DEFAULT_BACKOFF_MULTIPLIER` | 2 | Exponential retry multiplier |
 | `USER_AGENT` | EmployBoard identifier | External request identification |
 | `SMARTRECRUITERS_DETAIL_LIMIT` | 100 | Default detail enrichment limit |
 | `DEACTIVATION_MISS_THRESHOLD` | 2 | Required consecutive absences |
 | `DEACTIVATION_MIN_FETCH_RATIO` | 0.25 | Minimum response-size safety ratio |
+| `JOB_DESCRIPTION_CACHE_MAX_ENTRIES` | 10000 | Maximum cached description records |
+| `JOB_DESCRIPTION_CACHE_TTL_HOURS` | 24 | Description cache lifetime |
+| `JOB_DESCRIPTION_NEGATIVE_TTL_MINUTES` | 15 | Retry window for unavailable descriptions |
+| `CACHE_MAINTENANCE_INTERVAL_HOURS` | 1 | Expired-cache cleanup interval |
 
 Generate an administrative secret:
 
@@ -2390,6 +2426,20 @@ alembic downgrade -1
 ```
 
 Generated migrations should always be reviewed before applying them to a production database.
+
+The ledger/cache migration adds `last_verified_at`, `description_snippet`,
+`job_description_cache`, `job_description_negative_cache`, and request-health
+columns on ingestion runs. It preserves job rows and stable job IDs; existing
+descriptions are copied into the cache before being removed from the permanent
+ledger columns, and the maintenance pass then enforces the configured LRU
+capacity. Legacy source payloads are compacted to remove description/content
+documents while retaining bounded provenance metadata. Take a database backup
+before applying it:
+
+```bash
+pg_dump "$DATABASE_URL" > employboard-before-ledger-cache.sql
+alembic upgrade head
+```
 
 ---
 

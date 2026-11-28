@@ -7,8 +7,13 @@ from typing import Annotated, Literal
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database.connection import get_session
-from app.database.repositories import JobFilters, get_facets, get_job, list_jobs
+from app.database.connection import SessionLocal, get_session
+from app.database.repositories import (
+    JobFilters,
+    get_facets,
+    get_job_record,
+    list_jobs,
+)
 from app.models.enums import (
     ATS_PROVIDERS,
     EMPLOYMENT_TYPES,
@@ -16,6 +21,9 @@ from app.models.enums import (
     WORKPLACE_TYPES,
 )
 from app.schemas.job import FacetsResponse, JobDetail, JobListResponse
+from app.schemas.serializers import job_to_detail
+from app.services.description_cache_service import DescriptionCacheService
+from app.config import get_settings
 
 router = APIRouter(prefix="/jobs", tags=["jobs"])
 
@@ -89,9 +97,18 @@ async def get_job_detail(
     job_id: uuid.UUID,
     session: Annotated[AsyncSession, Depends(get_session)],
 ) -> JobDetail:
-    job = await get_job(session, job_id)
+    job = await get_job_record(session, job_id)
     if job is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Job not found"
         )
-    return job
+    cached = await DescriptionCacheService(
+        SessionLocal, get_settings()
+    ).get_or_fetch(session, job)
+    return job_to_detail(
+        job,
+        description=cached.description if cached else None,
+        requirements=cached.requirements if cached else None,
+        responsibilities=cached.responsibilities if cached else None,
+        skills=cached.skills if cached else None,
+    )

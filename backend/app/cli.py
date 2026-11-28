@@ -17,6 +17,7 @@ from app.database.repositories import get_stats, list_ingestion_runs
 from app.database.seed import seed_companies
 from app.logging_config import configure_logging
 from app.models.company import Company
+from app.models.enums import ATS_PROVIDERS
 from app.services.ingestion_service import IngestionService
 
 
@@ -132,16 +133,7 @@ def build_parser() -> argparse.ArgumentParser:
     sync = sub.add_parser("sync", help="Run ingestion now")
     sync.add_argument(
         "--provider",
-        choices=[
-            "greenhouse",
-            "lever",
-            "ashby",
-            "smartrecruiters",
-            "recruitee",
-            "workable",
-            "personio",
-            "teamtailor",
-        ],
+        choices=ATS_PROVIDERS,
     )
     sync.add_argument("--company", help="Company slug or UUID")
 
@@ -150,16 +142,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     verify.add_argument(
         "--provider",
-        choices=[
-            "greenhouse",
-            "lever",
-            "ashby",
-            "smartrecruiters",
-            "recruitee",
-            "workable",
-            "personio",
-            "teamtailor",
-        ],
+        choices=ATS_PROVIDERS,
     )
     verify.add_argument("--company", help="Company slug or UUID")
 

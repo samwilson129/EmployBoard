@@ -4,13 +4,33 @@
 
 ---
 
+## Ledger, description cache, and request management
+
+Scheduled ingestion writes searchable posting metadata to the permanent
+`jobs` ledger and does not perform eager detail requests. Full descriptions,
+requirements, responsibilities, and cache timestamps live in
+`job_description_cache`, bounded by the configured capacity. A separate
+negative cache prevents repeated requests for unavailable descriptions.
+
+`ATSRequestManager` is shared by adapters within an ingestion cycle. It
+applies provider-specific request budgets and concurrency, retries 429/5xx
+responses with `Retry-After` and jittered backoff, and coalesces identical
+concurrent GET requests. Provider overrides are supplied through
+`ATS_REQUEST_CONFIG_JSON`.
+
+`GET /api/jobs/{job_id}` reads the ledger first, then performs a lazy
+description lookup only on a cache miss. Only adapters that implement
+`fetch_detail` are queried for individual details; unsupported providers
+return metadata with an unavailable description rather than guessing or
+scraping.
+
 ## 1. Introduction
 
 EmployBoard collects publicly available job postings from multiple companies by integrating with the public job-posting APIs exposed by their Applicant Tracking Systems (ATS).
 
 Rather than scraping individual career websites using HTML selectors or browser automation, EmployBoard consumes structured JSON, XML or RSS responses directly from the underlying recruitment platforms.
 
-The application currently integrates with eight ATS providers:
+The application currently integrates with these configured ATS providers:
 
 1. Ashby
 2. Greenhouse

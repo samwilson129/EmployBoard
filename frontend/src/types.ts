@@ -71,6 +71,7 @@ export interface JobListItem {
 
 export interface JobDetail extends JobListItem {
   description: string | null;
+  description_available: boolean;
   requirements: string | null;
   responsibilities: string | null;
   skills: string[] | null;

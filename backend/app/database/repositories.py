@@ -149,6 +149,15 @@ async def get_job(session: AsyncSession, job_id: uuid.UUID):
     return job_to_detail(job) if job is not None else None
 
 
+async def get_job_record(session: AsyncSession, job_id: uuid.UUID) -> Job | None:
+    stmt = (
+        select(Job)
+        .where(Job.job_id == job_id)
+        .options(selectinload(Job.company), selectinload(Job.sources))
+    )
+    return await session.scalar(stmt)
+
+
 def _ordered_facets(
     rows: list[tuple[str, int]],
     preferred_order: tuple[str, ...] | None = None,

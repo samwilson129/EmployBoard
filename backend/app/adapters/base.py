@@ -13,6 +13,7 @@ import httpx
 
 from app.config import Settings
 from app.models.company import Company
+from app.services.ats_request_manager import ATSRequestManager
 
 logger = logging.getLogger(__name__)
 
@@ -178,9 +179,15 @@ class ATSAdapter(ABC):
     documentation_url: str
     supports_detail: bool = False
 
-    def __init__(self, client: httpx.AsyncClient, settings: Settings):
+    def __init__(
+        self,
+        client: httpx.AsyncClient,
+        settings: Settings,
+        request_manager: ATSRequestManager | None = None,
+    ):
         self.client = client
         self.settings = settings
+        self.request_manager = request_manager or ATSRequestManager(client, settings)
 
     @abstractmethod
     async def fetch_jobs(self, company: Company) -> list[AdapterJob]:
@@ -196,17 +203,7 @@ class ATSAdapter(ABC):
         return None
 
     async def _get(self, url: str, params: dict[str, Any] | None = None) -> Any:
-        return await request_json(
-            self.client,
-            url,
-            params=params,
-            max_retries=self.settings.http_max_retries,
-        )
+        return await self.request_manager.get_json(self.provider, url, params)
 
     async def _get_text(self, url: str, params: dict[str, Any] | None = None) -> str:
-        return await request_text(
-            self.client,
-            url,
-            params=params,
-            max_retries=self.settings.http_max_retries,
-        )
+        return await self.request_manager.get_text(self.provider, url, params)

@@ -16,6 +16,7 @@ from app.database.repositories import list_ingestion_runs
 from app.models.enums import ATS_PROVIDERS
 from app.schemas.job import IngestionRunsResponse, SyncTriggerResponse
 from app.services.ingestion_service import IngestionService
+from app.services.description_cache_service import DescriptionCacheService
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/admin", tags=["admin"])
@@ -23,7 +24,7 @@ router = APIRouter(prefix="/admin", tags=["admin"])
 
 class SyncRequest(BaseModel):
     company_ids: list[uuid.UUID] | None = Field(default=None, max_length=100)
-    providers: list[str] | None = Field(default=None, max_length=8)
+    providers: list[str] | None = Field(default=None)
 
 
 async def _run_sync_in_background(
@@ -89,3 +90,13 @@ async def get_sync_runs(
     limit: Annotated[int, Query(ge=1, le=100)] = 20,
 ) -> IngestionRunsResponse:
     return await list_ingestion_runs(session, limit)
+
+
+@router.get(
+    "/cache",
+    dependencies=[Depends(require_admin)],
+)
+async def get_cache_metrics(
+    session: Annotated[AsyncSession, Depends(get_session)],
+) -> dict[str, int | float]:
+    return await DescriptionCacheService(SessionLocal, get_settings()).metrics(session)

@@ -3,10 +3,11 @@ from __future__ import annotations
 import logging
 import uuid
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from sqlalchemy import func, select
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -14,6 +15,7 @@ from app.adapters.base import ATSAdapter
 from app.config import Settings
 from app.models.company import Company
 from app.models.job import Job
+from app.models.job_description_cache import JobDescriptionCache
 from app.models.job_source import JobSource
 from app.services.deduplication_service import (
     find_cross_source_candidate,
@@ -24,6 +26,7 @@ from app.services.normalization_service import (
     NormalizedJob,
     normalize_adapter_job,
 )
+from app.utils.text import make_snippet
 
 logger = logging.getLogger(__name__)
 
@@ -135,8 +138,12 @@ class JobSyncService:
         await session.flush()
 
         if adapter.supports_detail:
-            await self._enrich_details(session, company, adapter, stats, now)
-            await session.flush()
+            # Detail fetching is demand-driven by DescriptionCacheService.
+            # Avoid turning every scheduled list sync into N detail requests.
+            logger.debug(
+                "Skipping eager detail enrichment for %s; details are lazy",
+                company.company_name,
+            )
 
         await self._deactivate_missing(
             session,
@@ -170,9 +177,12 @@ class JobSyncService:
         if source is not None:
             canonical = source.job
             self._apply_job_fields(canonical, job, now, preserve_missing=True)
+            await self._cache_feed_description(
+                session, canonical.job_id, provider, job, now
+            )
             source.original_job_url = job.original_job_url
             source.source_payload = self._merge_payload(
-                source.source_payload, job.source_payload
+                source.source_payload, self._compact_payload(job.source_payload)
             )
             source.fetched_at = now
             source.last_verified_at = now
@@ -188,13 +198,16 @@ class JobSyncService:
         )
         if canonical is not None:
             self._apply_job_fields(canonical, job, now, preserve_missing=True)
+            await self._cache_feed_description(
+                session, canonical.job_id, provider, job, now
+            )
             session.add(
                 JobSource(
                     job=canonical,
                     ats_provider=provider,
                     external_job_id=job.external_job_id,
                     original_job_url=job.original_job_url,
-                    source_payload=job.source_payload,
+                    source_payload=self._compact_payload(job.source_payload),
                     fetched_at=now,
                     last_verified_at=now,
                 )
@@ -225,9 +238,12 @@ class JobSyncService:
             salary_max=job.salary_max,
             salary_currency=job.salary_currency,
             salary_interval=job.salary_interval,
-            description=job.description,
-            requirements=job.requirements,
-            responsibilities=job.responsibilities,
+            # Full descriptions live in job_description_cache. Keep the
+            # permanent ledger lightweight; skills remain searchable metadata.
+            description=None,
+            description_snippet=make_snippet(job.description),
+            requirements=None,
+            responsibilities=None,
             skills=job.skills,
             posted_at=job.posted_at,
             expires_at=job.expires_at,
@@ -236,6 +252,7 @@ class JobSyncService:
             missing_sync_count=0,
             first_seen_at=now,
             last_seen_at=now,
+            last_verified_at=now,
         )
 
         if flag_cross_source:
@@ -253,19 +270,70 @@ class JobSyncService:
 
         session.add(canonical)
         await session.flush()
+        await self._cache_feed_description(session, canonical.job_id, provider, job, now)
         session.add(
             JobSource(
                 job=canonical,
                 ats_provider=provider,
                 external_job_id=job.external_job_id,
                 original_job_url=job.original_job_url,
-                source_payload=job.source_payload,
+                source_payload=self._compact_payload(job.source_payload),
                 fetched_at=now,
                 last_verified_at=now,
             )
         )
         await session.flush()
         return "inserted"
+
+    async def _cache_feed_description(
+        self,
+        session: AsyncSession,
+        job_id: uuid.UUID,
+        provider: str,
+        job: NormalizedJob,
+        now: datetime,
+    ) -> None:
+        if not any(
+            value is not None and value != ""
+            for value in (
+                job.description,
+                job.requirements,
+                job.responsibilities,
+            )
+        ):
+            return
+
+        values = {
+            "job_id": job_id,
+            "description": job.description,
+            "requirements": job.requirements,
+            "responsibilities": job.responsibilities,
+            "skills": job.skills,
+            "cached_at": now,
+            "last_accessed_at": now,
+            "expires_at": now
+            + timedelta(hours=self.settings.job_description_cache_ttl_hours),
+            "source_provider": provider,
+            "source_updated_at": now,
+            "fetch_count": 0,
+        }
+        statement = insert(JobDescriptionCache).values(**values)
+        statement = statement.on_conflict_do_update(
+            index_elements=[JobDescriptionCache.job_id],
+            set_={
+                "description": statement.excluded.description,
+                "requirements": statement.excluded.requirements,
+                "responsibilities": statement.excluded.responsibilities,
+                "skills": statement.excluded.skills,
+                "cached_at": statement.excluded.cached_at,
+                "last_accessed_at": statement.excluded.last_accessed_at,
+                "expires_at": statement.excluded.expires_at,
+                "source_provider": statement.excluded.source_provider,
+                "source_updated_at": statement.excluded.source_updated_at,
+                "updated_at": func.now(),
+            },
+        )
+        await session.execute(statement)
 
     @staticmethod
     def _apply_job_fields(
@@ -278,7 +346,9 @@ class JobSyncService:
         canonical.title = job.title
         canonical.normalized_title = job.normalized_title or job.title.lower()
         canonical.application_url = job.application_url
+        canonical.description_snippet = make_snippet(job.description) or canonical.description_snippet
         canonical.last_seen_at = now
+        canonical.last_verified_at = now
         canonical.is_active = True
         canonical.missing_sync_count = 0
 
@@ -294,9 +364,6 @@ class JobSyncService:
             "salary_max",
             "salary_currency",
             "salary_interval",
-            "description",
-            "requirements",
-            "responsibilities",
             "skills",
             "posted_at",
             "expires_at",
@@ -311,90 +378,51 @@ class JobSyncService:
     def _merge_payload(
         existing: dict[str, Any] | None, incoming: dict[str, Any] | None
     ) -> dict[str, Any]:
-        incoming = incoming or {}
-        if not existing:
-            return incoming
-        if isinstance(existing, dict) and "detail" in existing:
-            if "detail" not in incoming:
-                merged = dict(incoming)
-                merged["detail"] = existing["detail"]
-                return merged
-        return incoming
+        merged = JobSyncService._compact_payload(existing)
+        merged.update(JobSyncService._compact_payload(incoming))
+        return merged
 
-    async def _enrich_details(
-        self,
-        session: AsyncSession,
-        company: Company,
-        adapter: ATSAdapter,
-        stats: SyncStats,
-        now: datetime,
-    ) -> None:
-        config = company.config or {}
-        configured_limit = config.get("detail_limit")
-        if isinstance(configured_limit, (int, float)):
-            limit = max(0, int(configured_limit))
-        else:
-            limit = self.settings.smartrecruiters_detail_limit
-        if limit == 0:
-            return
+    @staticmethod
+    def _compact_payload(payload: dict[str, Any] | None) -> dict[str, Any]:
+        """Keep provenance metadata without persisting full ATS documents."""
+        if not isinstance(payload, dict):
+            return {}
+        excluded = {
+            "description",
+            "descriptionhtml",
+            "descriptionplain",
+            "content",
+            "jobad",
+            "sharingdescription",
+            "requirements",
+            "responsibilities",
+            "openingplain",
+        }
 
-        stmt = (
-            select(Job)
-            .join(JobSource, JobSource.job_id == Job.job_id)
-            .where(
-                Job.company_id == company.company_id,
-                Job.is_active.is_(True),
-                Job.description.is_(None),
-                JobSource.ats_provider == adapter.provider,
-            )
-            .options(selectinload(Job.sources))
-            .order_by(Job.posted_at.desc().nullslast())
-            .limit(limit)
-            .execution_options(populate_existing=True)
-        )
-        jobs = (await session.scalars(stmt)).all()
-        logger.info(
-            "Enriching details for %s %s jobs (%s)",
-            len(jobs),
-            adapter.provider,
-            company.company_name,
-        )
-        for canonical in jobs:
-            source = next(
-                (
+        def compact(value: Any, key: str = "") -> Any:
+            if key.lower().replace("_", "") in excluded:
+                return None
+            if isinstance(value, dict):
+                return {
+                    str(child_key): child_value
+                    for child_key, child_value in (
+                        (child_key, compact(child_value, str(child_key)))
+                        for child_key, child_value in value.items()
+                    )
+                    if child_value is not None
+                }
+            if isinstance(value, list):
+                return [
                     item
-                    for item in canonical.sources
-                    if item.ats_provider == adapter.provider
-                ),
-                None,
-            )
-            if source is None:
-                continue
-            try:
-                detail = await adapter.fetch_detail(
-                    company, source.external_job_id, source.source_payload
-                )
-                if detail is None:
-                    continue
-                normalized = normalize_adapter_job(detail, company)
-                self._apply_job_fields(canonical, normalized, now, preserve_missing=True)
-                source.source_payload = detail.source_payload
-                source.last_verified_at = now
-                if normalized.original_job_url:
-                    source.original_job_url = normalized.original_job_url
-                await session.flush()
-            except Exception as exc:  # noqa: BLE001 - detail failures are isolated
-                stats.add_error(
-                    "detail",
-                    str(exc),
-                    external_job_id=source.external_job_id,
-                )
-                logger.warning(
-                    "Detail fetch failed for %s %s: %s",
-                    adapter.provider,
-                    source.external_job_id,
-                    exc,
-                )
+                    for item in (compact(item, key) for item in value)
+                    if item is not None
+                ][:50]
+            if isinstance(value, str):
+                return value[:2000]
+            return value
+
+        result = compact(payload)
+        return result if isinstance(result, dict) else {}
 
     async def _deactivate_missing(
         self,
